@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+    <name>com_pim</name>
+    <creationDate>2023-10-27</creationDate>
+    <copyright>2023 Pieter-Jan de Vries</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Pieter-Jan de Vries</author>
+    <authorEmail>pieter@obix.nl</authorEmail>
+    <authorUrl>https://www.obix.nl</authorUrl>
+    <version>CVS: 1.0.0</version>
+    <description>COM_PIM_XML_DESCRIPTION</description>
+    <namespace path="src">Pim\Component\Pim</namespace>
+    
+    
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    
+
+    <files folder="site">
+        <folder>src</folder>
+        <folder>forms</folder>
+        <folder>tmpl</folder>
+    </files>
+    <media destination="com_pim" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+    <languages folder="site/languages">
+        
+			<language tag="en-GB">en-GB/com_pim.ini</language>
+    </languages>
+    <administration>
+        <menu>COM_PIM</menu>
+        <submenu>
+            
+			<menu link="option=com_pim&amp;view=items" view="items" alt="Pim/Items">COM_PIM_TITLE_ITEMS</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>presets</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/com_pim.ini</language>
+			<language tag="en-GB">en-GB/com_pim.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+    </plugins>
+    
+
+    <updateservers>
+        <server type="extension" priority="1" name="com_pim">https://nocdn.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NDcwNjgtMjA5NTg0</server>
+    </updateservers>
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->
