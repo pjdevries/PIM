@@ -166,6 +166,7 @@ class HtmlView extends BaseHtmlView
 			'a.`id`' => Text::_('JGRID_HEADING_ID'),
 			'a.`state`' => Text::_('JSTATUS'),
 			'a.`ordering`' => Text::_('JGRID_HEADING_ORDERING'),
+			'a.`title`' => Text::_('COM_PIM_ITEMS_TITLE'),
 		);
 	}
 

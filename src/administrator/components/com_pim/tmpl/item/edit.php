@@ -27,6 +27,14 @@ HTMLHelper::_('bootstrap.tooltip');
 	method="post" enctype="multipart/form-data" name="adminForm" id="item-form" class="form-validate form-horizontal">
 
 	
+	<?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'item')); ?>
+	<?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'item', Text::_('COM_PIM_TAB_ITEM', true)); ?>
+	<div class="row-fluid">
+		<div class="col-md-12 form-horizontal">
+			<fieldset class="adminform">
+				<legend><?php echo Text::_('COM_PIM_FIELDSET_ITEM'); ?></legend>
+				<?php echo $this->form->renderField('title'); ?>
+				<?php echo $this->form->renderField('alias'); ?>
 				<?php if ($this->state->params->get('save_history', 1)) : ?>
 					<div class="control-group">
 						<div class="control-label"><?php echo $this->form->getLabel('version_note'); ?></div>

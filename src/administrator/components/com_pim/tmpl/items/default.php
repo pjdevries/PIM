@@ -72,6 +72,9 @@ if (!empty($saveOrder))
 						<?php echo HTMLHelper::_('searchtools.sort', 'JSTATUS', 'a.state', $listDirn, $listOrder); ?>
 					</th>
 						
+						<th class='left'>
+							<?php echo HTMLHelper::_('searchtools.sort',  'COM_PIM_ITEMS_TITLE', 'a.title', $listDirn, $listOrder); ?>
+						</th>
 						
 					<th scope="col" class="w-3 d-none d-lg-table-cell" >
 
@@ -131,6 +134,18 @@ if (!empty($saveOrder))
 								<?php echo HTMLHelper::_('jgrid.published', $item->state, $i, 'items.', $canChange, 'cb'); ?>
 							</td>
 							
+							<td>
+								<?php if (isset($item->checked_out) && $item->checked_out && ($canEdit || $canChange)) : ?>
+									<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'items.', $canCheckin); ?>
+								<?php endif; ?>
+								<?php if ($canEdit) : ?>
+									<a href="<?php echo Route::_('index.php?option=com_pim&task=item.edit&id='.(int) $item->id); ?>">
+									<?php echo $this->escape($item->title); ?>
+									</a>
+								<?php else : ?>
+												<?php echo $this->escape($item->title); ?>
+								<?php endif; ?>
+							</td>
 							
 							<td class="d-none d-lg-table-cell">
 							<?php echo $item->id; ?>
