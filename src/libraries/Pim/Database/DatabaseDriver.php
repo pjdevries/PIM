@@ -42,6 +42,7 @@ class DatabaseDriver
             'user' => $connectionParams->dbuser,
             'password' => $connectionParams->dbpassword,
             'database' => $connectionParams->dbname,
+            'prefix' => $connectionParams->dbprefix,
         ];
 
         $instances[$connectionParams->connectionName] = (new DatabaseFactory())->getDriver('mysqli', $dbConfig);

@@ -13,7 +13,7 @@ namespace Pim\Component\Pim\Site\Controller;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\FormController;
-use Joomla\CMS\Plugin\PluginHelper;
+use Pim\Component\Pim\Site\Model\OtherarticlesModel;
 use Pim\Database\DatabaseDriver;
 use Pim\Database\DatabaseParamsHelper;
 
@@ -33,10 +33,11 @@ class OtherarticlesController extends FormController
     public function getModel($name = 'Otherarticles', $prefix = 'Site', $config =[])
     {
         $helper = new DatabaseParamsHelper('system', 'pim');
-        $config = array_merge($config, [
-            'dbo' => DatabaseDriver::instance($helper->getConnectionParams('otherarticles'))
-        ]);
 
-        return parent::getModel($name, $prefix, $config);
+        /** @var OtherarticlesModel $model */
+        $model = parent::getModel($name, $prefix, $config);
+        $model->setDatabase(DatabaseDriver::instance($helper->getConnectionParams('otherarticles')));
+
+        return $model;
     }
 }
