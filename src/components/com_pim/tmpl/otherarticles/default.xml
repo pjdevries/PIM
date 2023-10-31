@@ -5,4 +5,14 @@
             <![CDATA[COM_CONTENT_OTHER_ARTICLES_VIEW_DEFAULT_DESC]]>
         </message>
     </layout>
+
+    <fields name="request">
+        <fieldset name="request" >
+            <field
+                    name="controller"
+                    type="hidden"
+                    default="otherarticles"
+            />
+        </fieldset>
+    </fields>
 </metadata>
