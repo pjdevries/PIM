@@ -25,21 +25,6 @@ use Pim\Database\DatabaseDriver;
 class OtherarticlesModel extends ListModel
 {
     /**
-     * Constructor.
-     *
-     * @param array $config An optional associative array of configuration settings.
-     *
-     * @see        JController
-     * @since      1.6
-     */
-    public function __construct($config = [], MVCFactoryInterface $factory = null)
-    {
-        $config['dbo'] = DatabaseDriver::instance('drimmelendb');
-
-        parent::__construct($config, $factory);
-    }
-
-    /**
      * Build an SQL query to load the list data.
      *
      * @return  QueryInterface

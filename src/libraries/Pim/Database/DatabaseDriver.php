@@ -26,39 +26,26 @@ class DatabaseDriver
      *
      * @since version 1.0.0
      */
-    public static function instance(string $name): DatabaseInterface
+    public static function instance(object $connectionParams, bool $forceNew = false): DatabaseInterface
     {
-        static $instance;
+        static $instances = [];
 
-        // Only create if it doesn't yet exist.
-        if (!$instance) {
-            // Get database details from deschrijn system plugin parameters.
-            $plugin = PluginHelper::getPlugin('system', 'pim');
-            // Get plugin params.
-            $pluginParams = new Registry($plugin->params);
-            // Get database params.
-            $databaseParams = $pluginParams->get('database');
-            // Get database params for requested connection.
-            $connectionParams = array_filter(
-                array_values((array) $databaseParams),
-                fn(object $p) => $p->connectionName === $name
-            );
-
-            $dbConfig = [
-                'driver' => $connectionParams[0]->dbtype,
-                'host' => $connectionParams[0]->dbhost,
-                'user' => $connectionParams[0]->dbuser,
-                'password' => $connectionParams[0]->dbpassword,
-                'database' => $connectionParams[0]->dbname,
-            ];
-
-            $instance = (new DatabaseFactory())->getDriver('mysqli', $dbConfig);
-
-            // Set date/time language default to Dutch.
-            $instance->setQuery("SET lc_time_names = 'nl_NL'");
-            $instance->execute();
+        // Return instance is it already exists.
+        if (isset($instances[$connectionParams->connectionName]) && !$forceNew) {
+            return $instances[$connectionParams->connectionName];
         }
 
-        return $instance;
+        // Create driver instance for these connection parameters.
+        $dbConfig = [
+            'driver' => $connectionParams->dbtype,
+            'host' => $connectionParams->dbhost,
+            'user' => $connectionParams->dbuser,
+            'password' => $connectionParams->dbpassword,
+            'database' => $connectionParams->dbname,
+        ];
+
+        $instances[$connectionParams->connectionName] = (new DatabaseFactory())->getDriver('mysqli', $dbConfig);
+
+        return $instances[$connectionParams->connectionName];
     }
 }
