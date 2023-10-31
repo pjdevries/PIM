@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * @package     PIM
+ *
+ * @author      Pieter-Jan de Vries/Obix webtechniek <pieter@obix.nl>
+ * @copyright   Copyright (C) 2023+ Obix webtechniek. All rights reserved.
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @link        https://www.obix.nl
+ */
+-->
+
+<extension type="plugin" group="webservices" method="upgrade">
+    <name>PLG_WEBSERVICES_PIM</name>
+    <creationDate>2023-10-31</creationDate>
+    <author>Pieter-Jan de Vries/Obix webtechniek</author>
+    <authorEmail>pieter@obix.nl</authorEmail>
+    <authorUrl>https://www.obix.nl</authorUrl>
+    <copyright>Copyright © 2023 Obix webtechniek. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>1.0.0</version>
+    <description>PLG_WEBSERVICES_PIM_XML_DESCRIPTION</description>
+    <namespace path="src">Pim\Plugin\WebServices\Pim</namespace>
+
+    <scriptfile>script.php</scriptfile>
+
+    <files>
+        <folder>language</folder>
+        <folder>services</folder>
+        <folder plugin="pim">src</folder>
+    </files>
+</extension>

@@ -7,7 +7,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Pim\Component\Pim\Api\View\XXX_UCFIRST_INTERNAL_NAME_XXX;
+namespace Pim\Component\Pim\Api\View\Items;
 
 \defined('_JEXEC') or die;
 
@@ -27,7 +27,7 @@ class JsonApiView extends BaseApiView
      * @since  1.0.0
      */
     protected $fieldsToRenderItem = [
-        //XXX_FIELDS_TO_RENDER_ITEM
+        'title'
     ];
 
     /**
@@ -37,6 +37,11 @@ class JsonApiView extends BaseApiView
      * @since  1.0.0
      */
     protected $fieldsToRenderList = [
-        //XXX_FIELDS_TO_RENDER_LIST
+        'title'
     ];
+
+    public function displayList(array $items = null)
+    {
+        parent::displayList($items);
+    }
 }

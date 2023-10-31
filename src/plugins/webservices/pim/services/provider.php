@@ -1,6 +1,6 @@
 <?php
 /**
- * @package     PIM System Plugin
+ * @package     PIM
  *
  * @author      Pieter-Jan de Vries/Obix webtechniek <pieter@obix.nl>
  * @copyright   Copyright (C) 2023+ Obix webtechniek. All rights reserved.
@@ -16,20 +16,26 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Pim\Plugin\System\Pim\Extension\Pim;
+use Pim\Plugin\WebServices\Pim\Extension\Pim;
 
 return new class implements ServiceProviderInterface {
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param Container $container The DI container.
+     *
+     * @return  void
+     * @since   9.6.0
+     */
     public function register(Container $container)
     {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $config = (array)PluginHelper::getPlugin('system', 'wwk');
-                $subject = $container->get(DispatcherInterface::class);
+                $pluginsParams = (array)PluginHelper::getPlugin('webservices', 'pim');
+                $dispatcher = $container->get(DispatcherInterface::class);
+                $plugin = new Pim($dispatcher, $pluginsParams);
 
-                /** @var \Joomla\CMS\Plugin\CMSPlugin $plugin */
-                /** @var \Joomla\CMS\Plugin\CMSPlugin $plugin */
-                $plugin = new Pim($subject, $config);
                 $plugin->setApplication(Factory::getApplication());
 
                 return $plugin;

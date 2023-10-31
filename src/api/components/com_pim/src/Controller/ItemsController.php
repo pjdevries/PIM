@@ -35,4 +35,9 @@ class ItemsController extends ApiController
      * @since  1.0.0
      */
     protected $default_view = 'items';
+
+    public function displayList()
+    {
+        parent::displayList();
+    }
 }

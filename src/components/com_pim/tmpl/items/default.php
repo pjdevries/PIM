@@ -159,6 +159,7 @@ $wa->useStyle('com_pim.list');
                 </tbody>
             </table>
         </div>
+
         <?php
         if ($canCreate) : ?>
             <a href="<?php
