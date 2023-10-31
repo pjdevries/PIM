@@ -12,7 +12,6 @@ namespace Pim\Component\Pim\Site\Dispatcher;
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
-use Joomla\CMS\Language\Text;
 
 /**
  * ComponentDispatcher class for Com_Pim
@@ -21,15 +20,15 @@ use Joomla\CMS\Language\Text;
  */
 class Dispatcher extends ComponentDispatcher
 {
-	/**
-	 * Dispatch a controller task. Redirecting the user if appropriate.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.0.0
-	 */
-	public function dispatch()
-	{
-		parent::dispatch();
-	}
+    /**
+     * Dispatch a controller task. Redirecting the user if appropriate.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     */
+    public function dispatch()
+    {
+        parent::dispatch();
+    }
 }

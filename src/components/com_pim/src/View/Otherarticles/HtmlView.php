@@ -13,7 +13,7 @@ namespace Pim\Component\Pim\Site\View\OtherArticles;
 defined('_JEXEC') or die;
 
 use Exception;
-use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 
 /**
  * View class for a list of Items.
@@ -22,21 +22,21 @@ use \Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
  */
 class HtmlView extends BaseHtmlView
 {
-	protected $items;
+    protected $items;
 
-	/**
-	 * Display the view
-	 *
-	 * @param   string  $tpl  Template name
-	 *
-	 * @return void
-	 *
-	 * @throws Exception
-	 */
-	public function display($tpl = null)
-	{
-		$this->items = $this->get('Items');
+    /**
+     * Display the view
+     *
+     * @param string $tpl Template name
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public function display($tpl = null)
+    {
+        $this->items = $this->get('Items');
 
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 }

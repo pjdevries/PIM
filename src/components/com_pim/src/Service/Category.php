@@ -9,10 +9,9 @@
  */
 
 namespace Pim\Component\Pim\Site\Service;
+
 // No direct access
 defined('_JEXEC') or die;
-
-use \Joomla\CMS\Categories\Categories;
 /**
  * Content Component Category Tree
  *

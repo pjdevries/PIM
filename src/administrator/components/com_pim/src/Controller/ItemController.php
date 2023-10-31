@@ -20,5 +20,5 @@ use Joomla\CMS\MVC\Controller\FormController;
  */
 class ItemController extends FormController
 {
-	protected $view_list = 'items';
+    protected $view_list = 'items';
 }

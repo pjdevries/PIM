@@ -11,8 +11,7 @@ namespace Pim\Component\Pim\Site\Helper;
 
 defined('_JEXEC') or die;
 
-use \Joomla\CMS\Factory;
-use \Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Factory;
 
 /**
  * Class PimFrontendHelper
@@ -21,51 +20,53 @@ use \Joomla\CMS\MVC\Model\BaseDatabaseModel;
  */
 class PimHelper
 {
-	
 
-	/**
-	 * Gets the files attached to an item
-	 *
-	 * @param   int     $pk     The item's id
-	 *
-	 * @param   string  $table  The table's name
-	 *
-	 * @param   string  $field  The field's name
-	 *
-	 * @return  array  The files
-	 */
-	public static function getFiles($pk, $table, $field)
-	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
 
-		$query
-			->select($field)
-			->from($table)
-			->where('id = ' . (int) $pk);
+    /**
+     * Gets the files attached to an item
+     *
+     * @param int $pk The item's id
+     *
+     * @param string $table The table's name
+     *
+     * @param string $field The field's name
+     *
+     * @return  array  The files
+     */
+    public static function getFiles($pk, $table, $field)
+    {
+        $db = Factory::getContainer()->get('DatabaseDriver');
+        $query = $db->getQuery(true);
 
-		$db->setQuery($query);
+        $query
+            ->select($field)
+            ->from($table)
+            ->where('id = ' . (int)$pk);
 
-		return explode(',', $db->loadResult());
-	}
+        $db->setQuery($query);
 
-	/**
-	 * Gets the edit permission for an user
-	 *
-	 * @param   mixed  $item  The item
-	 *
-	 * @return  bool
-	 */
-	public static function canUserEdit($item)
-	{
-		$permission = false;
-		$user       = Factory::getApplication()->getIdentity();
+        return explode(',', $db->loadResult());
+    }
 
-		if ($user->authorise('core.edit', 'com_pim') || (isset($item->created_by) && $user->authorise('core.edit.own', 'com_pim') && $item->created_by == $user->id) || $user->authorise('core.create', 'com_pim'))
-		{
-			$permission = true;
-		}
+    /**
+     * Gets the edit permission for an user
+     *
+     * @param mixed $item The item
+     *
+     * @return  bool
+     */
+    public static function canUserEdit($item)
+    {
+        $permission = false;
+        $user = Factory::getApplication()->getIdentity();
 
-		return $permission;
-	}
+        if ($user->authorise('core.edit', 'com_pim') || (isset($item->created_by) && $user->authorise(
+                    'core.edit.own',
+                    'com_pim'
+                ) && $item->created_by == $user->id) || $user->authorise('core.create', 'com_pim')) {
+            $permission = true;
+        }
+
+        return $permission;
+    }
 }

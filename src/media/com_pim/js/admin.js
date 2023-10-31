@@ -3,12 +3,12 @@ window.Joomla = window.Joomla || {};
 (function (window, Joomla) {
     Joomla.toggleField = function (id, task, field) {
 
-        var f = document.adminForm, i = 0, cbx, cb = f[ id ];
+        var f = document.adminForm, i = 0, cbx, cb = f[id];
 
         if (!cb) return false;
 
         while (true) {
-            cbx = f[ 'cb' + i ];
+            cbx = f['cb' + i];
 
             if (!cbx) break;
 
@@ -16,10 +16,10 @@ window.Joomla = window.Joomla || {};
             i++;
         }
 
-        var inputField   = document.createElement('input');
+        var inputField = document.createElement('input');
 
-        inputField.type  = 'hidden';
-        inputField.name  = 'field';
+        inputField.type = 'hidden';
+        inputField.name = 'field';
         inputField.value = field;
         f.appendChild(inputField);
 

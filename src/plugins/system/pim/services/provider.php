@@ -24,7 +24,7 @@ return new class implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $config  = (array)PluginHelper::getPlugin('system', 'wwk');
+                $config = (array)PluginHelper::getPlugin('system', 'wwk');
                 $subject = $container->get(DispatcherInterface::class);
 
                 /** @var \Joomla\CMS\Plugin\CMSPlugin $plugin */

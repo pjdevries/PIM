@@ -12,10 +12,8 @@ namespace Pim\Database;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseFactory;
 use Joomla\Database\DatabaseInterface;
-use Joomla\Registry\Registry;
 
 class DatabaseDriver
 {

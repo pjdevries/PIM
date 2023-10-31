@@ -22,15 +22,15 @@ class OtherarticlesController extends FormController
     /**
      * Proxy for getModel.
      *
-     * @param   string  $name    The model name. Optional.
-     * @param   string  $prefix  The class prefix. Optional
-     * @param   array   $config  Configuration array for model. Optional
+     * @param string $name The model name. Optional.
+     * @param string $prefix The class prefix. Optional
+     * @param array $config Configuration array for model. Optional
      *
-     * @return  object	The model
+     * @return  object    The model
      *
      * @since   1.0.0
      */
-    public function getModel($name = 'Otherarticles', $prefix = 'Site', $config =[])
+    public function getModel($name = 'Otherarticles', $prefix = 'Site', $config = [])
     {
         $helper = new DatabaseParamsHelper('system', 'pim');
 

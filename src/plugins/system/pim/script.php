@@ -24,37 +24,39 @@ class plgSystemPimInstallerScript
     public function __construct()
     {
         $this->minimumJoomla = '4.3';
-        $this->minimumPhp    = '8.2';
+        $this->minimumPhp = '8.2';
     }
 
     /**
      * Called after any type of action.
      *
-     * @param   string            $action   Which action is happening (install|uninstall|discover_install|update)
-     * @param   PluginAdapter  $adapter  The object responsible for running this script
+     * @param string $action Which action is happening (install|uninstall|discover_install|update)
+     * @param PluginAdapter $adapter The object responsible for running this script
      *
      * @return  void
      */
     public function postflight($action, PluginAdapter $adapter): void
     {
         // Enable plugin on first installation only.
-        if ($action === 'install' || $action === 'discover_install')
-        {
+        if ($action === 'install' || $action === 'discover_install') {
             $this->publish();
         }
     }
 
-	public function publish(): void
-	{
-		// Enable plugin on first installation only.
-        $db    = Factory::getDbo();
-        $query = sprintf('UPDATE %s SET %s = 1 WHERE %s = %s AND %s = %s',
+    public function publish(): void
+    {
+        // Enable plugin on first installation only.
+        $db = Factory::getDbo();
+        $query = sprintf(
+            'UPDATE %s SET %s = 1 WHERE %s = %s AND %s = %s',
             $db->quoteName('#__extensions'),
             $db->quoteName('enabled'),
-            $db->quoteName('type'), $db->quote('plugin'),
-            $db->quoteName('name'), $db->quote('PLG_SYSTEM_PIM')
+            $db->quoteName('type'),
+            $db->quote('plugin'),
+            $db->quoteName('name'),
+            $db->quote('PLG_SYSTEM_PIM')
         );
         $db->setQuery($query);
         $db->execute();
-	}
+    }
 }

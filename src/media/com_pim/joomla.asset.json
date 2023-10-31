@@ -21,9 +21,9 @@
       }
     },
     {
-        "name": "com_pim.list",
-        "type": "style",
-        "uri": "com_pim/list.css"
+      "name": "com_pim.list",
+      "type": "style",
+      "uri": "com_pim/list.css"
     }
   ]
 }

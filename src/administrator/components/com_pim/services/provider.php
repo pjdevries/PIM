@@ -19,9 +19,9 @@ use Joomla\CMS\Extension\Service\Provider\MVCFactory;
 use Joomla\CMS\Extension\Service\Provider\RouterFactory;
 use Joomla\CMS\HTML\Registry;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
-use Pim\Component\Pim\Administrator\Extension\PimComponent;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use Pim\Component\Pim\Administrator\Extension\PimComponent;
 
 
 /**
@@ -29,39 +29,37 @@ use Joomla\DI\ServiceProviderInterface;
  *
  * @since  1.0.0
  */
-return new class implements ServiceProviderInterface
-{
-	/**
-	 * Registers the service provider with a DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.0.0
-	 */
-	public function register(Container $container)
-	{
+return new class implements ServiceProviderInterface {
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param Container $container The DI container.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     */
+    public function register(Container $container)
+    {
         JLoader::registerNamespace('Pim', JPATH_LIBRARIES . '/Pim');
 
-		$container->registerServiceProvider(new CategoryFactory('\\Pim\\Component\\Pim'));
-		$container->registerServiceProvider(new MVCFactory('\\Pim\\Component\\Pim'));
-		$container->registerServiceProvider(new ComponentDispatcherFactory('\\Pim\\Component\\Pim'));
-		$container->registerServiceProvider(new RouterFactory('\\Pim\\Component\\Pim'));
+        $container->registerServiceProvider(new CategoryFactory('\\Pim\\Component\\Pim'));
+        $container->registerServiceProvider(new MVCFactory('\\Pim\\Component\\Pim'));
+        $container->registerServiceProvider(new ComponentDispatcherFactory('\\Pim\\Component\\Pim'));
+        $container->registerServiceProvider(new RouterFactory('\\Pim\\Component\\Pim'));
 
-		$container->set(
-			ComponentInterface::class,
-			function (Container $container)
-			{
-				$component = new PimComponent($container->get(ComponentDispatcherFactoryInterface::class));
+        $container->set(
+            ComponentInterface::class,
+            function (Container $container) {
+                $component = new PimComponent($container->get(ComponentDispatcherFactoryInterface::class));
 
-				$component->setRegistry($container->get(Registry::class));
-				$component->setMVCFactory($container->get(MVCFactoryInterface::class));
-				$component->setCategoryFactory($container->get(CategoryFactoryInterface::class));
-				$component->setRouterFactory($container->get(RouterFactoryInterface::class));
+                $component->setRegistry($container->get(Registry::class));
+                $component->setMVCFactory($container->get(MVCFactoryInterface::class));
+                $component->setCategoryFactory($container->get(CategoryFactoryInterface::class));
+                $component->setRouterFactory($container->get(RouterFactoryInterface::class));
 
-				return $component;
-			}
-		);
-	}
+                return $component;
+            }
+        );
+    }
 };

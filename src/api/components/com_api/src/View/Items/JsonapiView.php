@@ -20,23 +20,23 @@ use Joomla\CMS\MVC\View\JsonApiView as BaseApiView;
  */
 class JsonApiView extends BaseApiView
 {
-	/**
-	 * The fields to render item in the documents
-	 *
-	 * @var    array
-	 * @since  1.0.0
-	 */
-	protected $fieldsToRenderItem = [
-		//XXX_FIELDS_TO_RENDER_ITEM
-	];
+    /**
+     * The fields to render item in the documents
+     *
+     * @var    array
+     * @since  1.0.0
+     */
+    protected $fieldsToRenderItem = [
+        //XXX_FIELDS_TO_RENDER_ITEM
+    ];
 
-	/**
-	 * The fields to render items in the documents
-	 *
-	 * @var    array
-	 * @since  1.0.0
-	 */
-	protected $fieldsToRenderList = [
-		//XXX_FIELDS_TO_RENDER_LIST
-	];
+    /**
+     * The fields to render items in the documents
+     *
+     * @var    array
+     * @since  1.0.0
+     */
+    protected $fieldsToRenderList = [
+        //XXX_FIELDS_TO_RENDER_LIST
+    ];
 }

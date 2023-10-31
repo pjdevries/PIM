@@ -22,8 +22,8 @@ class ItemsModel extends ListModel
      * Instantiates a model with a deviating database driver, allowing
      * access to an alternate database.
      *
-     * @param   array                                             $config
-     * @param   \Joomla\CMS\MVC\Factory\MVCFactoryInterface|null  $factory
+     * @param array $config
+     * @param \Joomla\CMS\MVC\Factory\MVCFactoryInterface|null $factory
      *
      * @throws \Exception
      */
@@ -37,7 +37,7 @@ class ItemsModel extends ListModel
     public function getItemCount(): int
     {
         $db = DatabaseDriver::instance();
-        $q  = $db->getQuery(true);
+        $q = $db->getQuery(true);
         $q
             ->select('count(*) AS count')
             ->from($db->qn('#__items'));

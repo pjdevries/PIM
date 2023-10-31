@@ -59,7 +59,7 @@ class Pim extends CMSPlugin implements SubscriberInterface
     {
         // TODO: Implement getSubscribedEvents() method.
         return [
-            'onAfterRoute'        => 'handleAfterRoute'
+            'onAfterRoute' => 'handleAfterRoute'
         ];
     }
 
@@ -68,8 +68,7 @@ class Pim extends CMSPlugin implements SubscriberInterface
         $lang = $this->app->getLanguage();
         $langTag = $lang->getTag();
 
-        if ($this->app->isClient('administrator'))
-        {
+        if ($this->app->isClient('administrator')) {
             // administrator/language/en-GB/com_config.ini
             $basePath = JPATH_ADMINISTRATOR;
             $lang->load('com_config', $basePath, $langTag, true);
