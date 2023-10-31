@@ -42,6 +42,7 @@ return new class implements ServiceProviderInterface
 	 */
 	public function register(Container $container)
 	{
+        JLoader::registerNamespace('Pim', JPATH_LIBRARIES . '/Pim');
 
 		$container->registerServiceProvider(new CategoryFactory('\\Pim\\Component\\Pim'));
 		$container->registerServiceProvider(new MVCFactory('\\Pim\\Component\\Pim'));

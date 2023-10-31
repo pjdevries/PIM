@@ -8,7 +8,7 @@
  * @link        https://www.obix.nl
  */
 
-namespace PIM\Database;
+namespace Pim\Database;
 
 \defined('_JEXEC') or die;
 
@@ -26,23 +26,30 @@ class DatabaseDriver
      *
      * @since version 1.0.0
      */
-    public static function instance(): DatabaseInterface
+    public static function instance(string $name): DatabaseInterface
     {
         static $instance;
 
         // Only create if it doesn't yet exist.
         if (!$instance) {
             // Get database details from deschrijn system plugin parameters.
-            $plugin = PluginHelper::getPlugin('system', 'alternatedatabase');
-
-            // Get plugin params
+            $plugin = PluginHelper::getPlugin('system', 'pim');
+            // Get plugin params.
             $pluginParams = new Registry($plugin->params);
+            // Get database params.
+            $databaseParams = $pluginParams->get('database');
+            // Get database params for requested connection.
+            $connectionParams = array_filter(
+                array_values((array) $databaseParams),
+                fn(object $p) => $p->connectionName === $name
+            );
+
             $dbConfig = [
-                'driver' => $pluginParams->get('dbtype'),
-                'host' => $pluginParams->get('dbhost'),
-                'user' => $pluginParams->get('dbuser'),
-                'password' => $pluginParams->get('dbpassword'),
-                'database' => $pluginParams->get('dbname'),
+                'driver' => $connectionParams[0]->dbtype,
+                'host' => $connectionParams[0]->dbhost,
+                'user' => $connectionParams[0]->dbuser,
+                'password' => $connectionParams[0]->dbpassword,
+                'database' => $connectionParams[0]->dbname,
             ];
 
             $instance = (new DatabaseFactory())->getDriver('mysqli', $dbConfig);

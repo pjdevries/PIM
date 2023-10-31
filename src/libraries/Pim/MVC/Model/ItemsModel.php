@@ -8,13 +8,13 @@
  * @link        https://www.obix.nl
  */
 
-namespace PIM\MVC\Model;
+namespace Pim\MVC\Model;
 
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
-use PIM\Database\DatabaseDriver;
+use Pim\Database\DatabaseDriver;
 
 class ItemsModel extends ListModel
 {
@@ -29,7 +29,7 @@ class ItemsModel extends ListModel
      */
     public function __construct($config = [], MVCFactoryInterface $factory = null)
     {
-        $config['dbo'] = DatabaseDriver::instance();
+        $config['dbo'] = DatabaseDriver::instance('drimmelendb');
 
         parent::__construct($config, $factory);
     }
