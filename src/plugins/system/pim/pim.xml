@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PIM System Plugin -->
+<!-- -->
+<!-- Pieter-Jan de Vries/Obix webtechniek <pieter@obix.nl> -->
+<!-- Copyright © 2023 Obix webtechniek. All rights reserved. -->
+<!-- License GNU General Public License version 2 or later; see LICENSE.txt -->
+<!-- https://www.obix.nl-->
+<extension type="plugin" group="system" method="upgrade">
+    <name>PLG_SYSTEM_PIM</name>
+    <creationDate>2023-10-29</creationDate>
+    <author>Pieter-Jan de Vries/Obix webtechniek</author>
+    <authorEmail>pieter@obix.nl</authorEmail>
+    <authorUrl>https://www.obix.nl</authorUrl>
+    <copyright>Copyright © 2023 Obix webtechniek. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <version>1.0.0</version>
+    <description>PLG_SYSTEM_PIM_XML_DESCRIPTION</description>
+    <namespace path="src">PIM\Plugin\System\Pim</namespace>
+
+    <!-- Scripts to run on installation -->
+    <scriptfile>script.php</scriptfile>
+
+    <!-- Plugin files -->
+    <files>
+        <folder>language</folder>
+        <folder>services</folder>
+        <folder plugin="pim">src</folder>
+    </files>
+
+    <!-- Config parameters -->
+    <config>
+        <fields name="params">
+            <fieldset name="database">
+                <field name="database"
+                       type="subform"
+                       label="PLG_SYSTEM_PIM_FIELD_DATABASE_LABEL"
+                       multiple="true"
+                >
+                    <form>
+                        <field name="connectionName"
+                               type="text"
+                               label="PLG_SYSTEM_PIM_FIELD_DATABASE_CONNECTION_NAME_LABEL"
+                               required="true"
+                               filter="string"
+                        />
+
+                        <field name="dbtype"
+                               type="databaseconnection"
+                               label="COM_CONFIG_FIELD_DATABASE_TYPE_LABEL"
+                               supported="mysql,mysqli,pgsql,postgresql"
+                               filter="string"
+                               default="mysqli"
+                        />
+
+                        <field name="dbhost"
+                               type="text"
+                               label="COM_CONFIG_FIELD_DATABASE_HOST_LABEL"
+                               required="true"
+                               filter="string"
+                               size="30"
+                        />
+
+                        <field name="dbuser"
+                               type="text"
+                               label="COM_CONFIG_FIELD_DATABASE_USERNAME_LABEL"
+                               required="true"
+                               filter="string"
+                               size="30"
+                        />
+
+                        <field name="dbpassword"
+                               type="password"
+                               label="COM_CONFIG_FIELD_DATABASE_PASSWORD_LABEL"
+                               required="true"
+                               filter="raw"
+                               autocomplete="off"
+                               size="30"
+                        />
+
+                        <field name="dbname"
+                               type="text"
+                               label="COM_CONFIG_FIELD_DATABASE_NAME_LABEL"
+                               required="true"
+                               filter="string"
+                               size="30"
+                        />
+
+                        <field
+                                name="dbprefix"
+                                type="text"
+                                label="COM_CONFIG_FIELD_DATABASE_PREFIX_LABEL"
+                                default="jos_"
+                                filter="string"
+                                required="true"
+                        />
+                    </form>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
