@@ -39,7 +39,7 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function display($tpl = null)
     {
