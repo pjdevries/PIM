@@ -15,7 +15,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <version>1.0.0</version>
     <description>PLG_SYSTEM_PIM_XML_DESCRIPTION</description>
-    <namespace path="src">PIM\Plugin\System\Pim</namespace>
+    <namespace path="src">Pim\Plugin\System\Pim</namespace>
 
     <!-- Scripts to run on installation -->
     <scriptfile>script.php</scriptfile>

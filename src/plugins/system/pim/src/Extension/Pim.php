@@ -8,7 +8,7 @@
  * @link       https://www.obix.nl
  */
 
-namespace PIM\Plugin\System\Pim\Extension;
+namespace Pim\Plugin\System\Pim\Extension;
 
 defined('_JEXEC') or die;
 

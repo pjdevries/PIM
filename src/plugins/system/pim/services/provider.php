@@ -16,7 +16,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use PIM\Plugin\System\Pim\Extension\Pim;
+use Pim\Plugin\System\Pim\Extension\Pim;
 
 return new class implements ServiceProviderInterface {
     public function register(Container $container)
