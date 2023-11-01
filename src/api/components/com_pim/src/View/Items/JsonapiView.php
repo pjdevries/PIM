@@ -27,7 +27,9 @@ class JsonApiView extends BaseApiView
      * @since  1.0.0
      */
     protected $fieldsToRenderItem = [
-        'title'
+        'id',
+        'title',
+        'state'
     ];
 
     /**
@@ -37,7 +39,9 @@ class JsonApiView extends BaseApiView
      * @since  1.0.0
      */
     protected $fieldsToRenderList = [
-        'title'
+        'id',
+        'title',
+        'state'
     ];
 
     public function displayList(array $items = null)
