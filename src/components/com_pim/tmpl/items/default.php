@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Pim\Component\Pim\Site\Controller\ItemsApiController;
 
 HTMLHelper::_('bootstrap.tooltip');
 HTMLHelper::_('behavior.multiselect');
@@ -39,13 +40,17 @@ $wa = $this->document->getWebAssetManager();
 $wa->useStyle('com_pim.list');
 
 $wa->registerAndUseScript('alpinejs', '//unpkg.com/alpinejs', [], ['defer' => true]);
+
+$apiState = ItemsApiController::getApiState();
+
+$xDebug = Factory::getApplication()->getInput()->getCmd('XDEBUG_SESSION_START', '');
 ?>
 
 <form action="<?php
 echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
       name="adminForm" id="adminForm">
 
-    <div class="table-responsive" x-data="items()" x-show="items.length">
+    <div class="table-responsive" x-data="itemservice" x-show="items.length">
         <?php
         if ($canCreate) : ?>
             <input type="text" class="form-control" placeholder="Item title" x-model="newItem">
@@ -102,60 +107,52 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
             </tbody>
         </table>
     </div>
-    <?php
-    echo HTMLHelper::_('form.token'); ?>
+    <?php echo HTMLHelper::_('form.token'); ?>
 </form>
 
 <script>
-    function items() {
-        return {
-            endpoint: 'https://j4.obix.local:8482/api/v1/pim/items',
-            token: 'c2hhMjU2OjM0OmZiODNkNmJmZGFjMTc3NTJkMmQyZGJmZDRiZDczYzQ4ZTgxNzk0NzBmNTJkOGVmZWFhNTdiZTU4ZDMyMWViYmQ=',
-            items: <?= json_encode($this->items) ?>,
-            newItem: '',
-            addItem() {
-                if (this.newItem.trim().length < 1) {
-                    return;
-                }
+    (function () {
+        class WebserviceApi {
+            async getItems(url, headers = {}) {
+                const defaultHeaders = {
+                    'Accept': 'application/vnd.api+json'
+                };
 
-                this.postItem(this.endpoint, {
-                    title: this.newItem
-                }).then(response => {
-                    console.debug(response);
-
-                    this.items.push({
-                        id: response.data.attributes.id,
-                        title: response.data.attributes.title,
-                        state: response.data.attributes.state,
-                    })
+                return this.ajax(url, {
+                    method: 'GET',
+                    headers: Object.assign(defaultHeaders, headers)
                 });
+            }
 
-                this.newItem = '';
-            },
-            async postItem(url, data = null) {
-                return this.fetch(url, {
+            async postItem(url, headers = {}, data = null) {
+                const defaultHeaders = {
+                    'Content-Type': 'application/vnd.api+jsonn',
+                    'Accept': 'application/vnd.api+json'
+                };
+
+                return this.ajax(url, {
                     method: 'POST',
                     body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/vnd.api+jsonn',
-                        'Accept': 'application/vnd.api+json',
-                        'X-Joomla-Token': this.token
-                    }
+                    headers: Object.assign(defaultHeaders, headers)
                 });
-            },
-            async fetch(url, options) {
+            }
+
+            async ajax(url, options) {
                 if (!url) {
                     return {};
                 }
 
                 try {
                     const response = await fetch(url, options);
+                    const decodedResponse = await response.json();
 
                     if (!response.ok) {
+                        Joomla.renderMessages({'error': [response.status + ' - ' + decodedResponse.errors[0].title]});
+
                         return null;
                     }
 
-                    return response.json();
+                    return decodedResponse;
                 } catch (e) {
                     console.log(e.message);
 
@@ -163,5 +160,155 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                 }
             }
         }
-    }
+
+        class ControllerApi {
+            async getItems(url, headers = {}) {
+                const defaultHeaders = {
+                    'Accept': 'application/vnd.api+json'
+                };
+
+                return this.ajax(url, {
+                    method: 'GET',
+                    headers: Object.assign(defaultHeaders, headers)
+                });
+            }
+
+            async postItem(url, headers = {}, data = null) {
+                const defaultHeaders = {
+                    'Content-Type': 'application/vnd.api+jsonn',
+                    'Accept': 'application/vnd.api+json'
+                };
+
+                return this.ajax(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: Object.assign(defaultHeaders, headers)
+                });
+            }
+
+            async ajax(url, options) {
+                if (!url) {
+                    return {};
+                }
+
+                try {
+                    const response = await fetch(url, options);
+                    const decodedResponse = await response.json();
+
+                    if (!response.ok) {
+                        Joomla.renderMessages({'error': [decodedResponse.message]});
+
+                        return null;
+                    }
+
+                    return decodedResponse;
+                } catch (e) {
+                    console.log(e.message);
+
+                    return null;
+                }
+            }
+        }
+
+        const WebserviceService = {
+            endpoint: 'https://j4.obix.local:8482/api/v1/pim/items',
+            token: 'c2hhMjU2OjM0OmZiODNkNmJmZGFjMTc3NTJkMmQyZGJmZDRiZDczYzQ4ZTgxNzk0NzBmNTJkOGVmZWFhNTdiZTU4ZDMyMWViYmQ=',
+            items: [],
+            newItem: '',
+            api: new WebserviceApi(),
+            init() {
+                <?php if ($xDebug) : ?>
+                this.endpoint += '?XDEBUG_SESSION_START=' + '<?= $xDebug ?>';
+                <?php endif; ?>
+
+                this.loadItems();
+            },
+            loadItems() {
+                this.items = [];
+
+                this.api.getItems(this.endpoint, {'X-Joomla-Token': this.token})
+                    .then(response => {
+                        response.data.forEach(item => {
+                            this.items.push({
+                                id: item.attributes.id,
+                                title: item.attributes.title,
+                                state: item.attributes.state,
+                            });
+                        })
+                    });
+
+            },
+            addItem() {
+                if (this.newItem.trim().length < 1) {
+                    return;
+                }
+
+                this.api.postItem(this.endpoint, {'X-Joomla-Token': this.token}, {
+                    title: this.newItem
+                })
+                    .then(response => {
+                        this.items.push({
+                            id: response.data.attributes.id,
+                            title: response.data.attributes.title,
+                            state: response.data.attributes.state,
+                        })
+                    });
+
+                this.newItem = '';
+            }
+        };
+
+        const ControllerService = {
+            endpoint: 'https://j4.obix.local:8482/index.php?option=com_pim',
+            token: '<?= base64_encode($apiState->enabled ? $apiState->key : '') ?>',
+            items: [],
+            newItem: '',
+            api: new ControllerApi(),
+            init() {
+                <?php if ($xDebug) : ?>
+                this.endpoint += '&XDEBUG_SESSION_START=' + '<?= $xDebug ?>';
+                <?php endif; ?>
+                this.endpoint += '&task=ItemsApi.';
+
+                this.loadItems();
+            },
+            loadItems() {
+                this.items = [];
+
+                this.api.getItems(this.endpoint + 'getItems', {'Api-Authorization': this.token})
+                    .then(response => {
+                        response.data.forEach(item => {
+                            this.items.push({
+                                id: item.id,
+                                title: item.title,
+                                state: item.state,
+                            });
+                        })
+                    });
+
+            },
+            addItem() {
+                if (this.newItem.trim().length < 1) {
+                    return;
+                }
+
+                this.api.postItem(this.endpoint + 'postItem', {'Api-Authorization': this.token}, {
+                    title: this.newItem
+                })
+                    .then(response => {
+                        this.items.push({
+                            id: response.data.attributes.id,
+                            title: response.data.attributes.title,
+                            state: response.data.attributes.state,
+                        })
+                    });
+
+                this.newItem = '';
+            }
+        };
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('itemservice', () => WebserviceService);
+        })
+    })();
 </script>
