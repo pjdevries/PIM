@@ -6,7 +6,7 @@
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace HKweb\Component\Kwekfestijn\Site\Controller;
+namespace Pim\Component\Pim\Site\Controller;
 
 defined('_JEXEC') or die();
 
@@ -15,11 +15,11 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Database\QueryInterface;
 use Pim\Api\Exception\ApiDisabledException;
 use Pim\Api\Exception\InsecureRequestException;
 use Pim\Api\Exception\InvalidRequestMethodException;
 use Pim\Api\Exception\UnauthorizedException;
+use Pim\Component\Pim\Site\Model\ItemsModel;
 
 /**
  * Kwekfestijn Component Controller
@@ -28,21 +28,13 @@ use Pim\Api\Exception\UnauthorizedException;
  */
 class ItemsApiController extends BaseController
 {
-    /**
-     * @var bool
-     */
-    protected bool $apiEnabled = false;
-
-    /**
-     * @var string
-     */
-    protected string $apiKey = '';
-
     public function __construct()
     {
         parent::__construct();
 
-        $this->init();
+        // Load component language strings.
+        $language = $this->app->getLanguage();
+        $language->load('com_pim', JPATH_COMPONENT);
     }
 
     /**
@@ -50,9 +42,15 @@ class ItemsApiController extends BaseController
      */
     protected function init(): void
     {
-        // Load component language strings.
-        $language = $this->app->getLanguage();
-        $language->load('com_pim', JPATH_COMPONENT);
+    }
+
+    public static function getApiState(): ?object
+    {
+        $state = null;
+
+        if ($state) {
+            return $state;
+        }
 
         // Obtain API settings from plugin.
         $plugin = PluginHelper::getPlugin('system', 'pim');
@@ -64,14 +62,23 @@ class ItemsApiController extends BaseController
         }
 
         if (!($plugin && is_object($plugin))) {
-            return;
+            $state = (object)[
+                'enabled' => false,
+                'key' => ''
+            ];
+
+            return $state;
         }
 
         $params = json_decode($plugin->params);
 
         // Set API state and key in this object, to be accessed later on when an actual request is being made.
-        $this->apiEnabled = (bool)$params->api_enabled;
-        $this->apiKey = $params->api_key;
+        $state = (object)[
+            'enabled' => (bool)$params?->api_enabled ?? false,
+            'key' => $params?->api_key ?? ''
+        ];
+
+        return $state;
     }
 
     /**
@@ -81,29 +88,47 @@ class ItemsApiController extends BaseController
      */
     public function display($cachable = false, $urlparams = [])
     {
-        $this->sendResponse([], 'Onbekende taak: ' . $this->app->getInput()->getCmd('task'), 404);
+        $this->sendResponse([], Text::sprintf('COM_PIM_API_EXCEPTION_UNKNOWN_REQUEST_TASK', $this->app->getInput()->getCmd('task')), 404);
     }
 
-    /**
-     * @param QueryInterface $query
-     * @return void
-     */
-    private function sendQueryResult(QueryInterface $query): void
+    public function getItems(): void
     {
         try {
-            $this->db->setQuery($query);
-            $results = $this->db->loadObjectList();
+            $this->checkRequest('getItems', 'GET');
 
-            if (!$results) {
-                $this->sendResponse([], 'DB gave no results', 404);
+            /** @var ItemsModel $model */
+            $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Items', 'Site');
+
+            $this->sendResponse($model->getItems());
+        } catch (\Exception $e) {
+            $this->sendResponse([], $e->getMessage(), $e->getCode());
+        }
+
+    }
+
+    public function postItems(): void
+    {
+        try {
+            $this->checkRequest('postItems', 'POST');
+
+            $filters = [];
+
+            if ($orderId = $this->app->input->getInt('orderId', 0)) {
+                $filters['orderId'] = $orderId;
             }
 
-            $this->sendResponse($results, '', 200);
-        } catch (\mysqli_sql_exception $e) {
-            $this->sendResponse([], $e->getMessage() . ' (MySQL ' . $e->getCode() . ')', 500);
+            if ($createdDate = $this->app->input->getString('fromCreatedDate', '')) {
+                $filters['fromCreatedDate'] = $createdDate;
+            }
+
+            /** @var ItemsModel $model */
+            $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Item', 'Site');
+
+            $this->sendResponse(iterator_to_array($model->getOrders($filters)));
         } catch (\Exception $e) {
-            $this->sendResponse([], $e->getMessage(), $e->getCode(), 500);
+            $this->sendResponse([], $e->getMessage(), $e->getCode());
         }
+
     }
 
     /**
@@ -113,8 +138,10 @@ class ItemsApiController extends BaseController
      */
     public function checkRequest(string $task, string $requestMethod): void
     {
+        $apiState = self::getApiState();
+
         // Check if API is enabled.
-        if (!$this->apiEnabled) {
+        if (!$apiState->enabled) {
             throw new ApiDisabledException();
         }
 
@@ -130,7 +157,7 @@ class ItemsApiController extends BaseController
             );
         }
 
-        if (!$this->checkAuthorisation()) {
+        if (!$this->checkAuthorisation($apiState->key)) {
             throw new UnauthorizedException();
         }
     }
@@ -138,7 +165,7 @@ class ItemsApiController extends BaseController
     /**
      * @return bool
      */
-    private function checkAuthorisation(): bool
+    private function checkAuthorisation(string $key): bool
     {
         $headers = getallheaders();
 
@@ -147,15 +174,9 @@ class ItemsApiController extends BaseController
             return false;
         }
 
-        $parts = explode(' ', $authorization);
+        $token = base64_decode($authorization);
 
-        if (!count($parts) === 2 && ($scheme = strtoupper($parts[0])) === 'BASIC') {
-            return false;
-        }
-
-        $token = base64_decode($parts[1]);
-
-        return !is_null($this->apiKey) && $token === $this->apiKey;
+        return !is_null($key) && $token === $key;
     }
 
     /**
