@@ -30,6 +30,32 @@
     <!-- Config parameters -->
     <config>
         <fields name="params">
+            <fieldset name="basic" addfieldprefix="Pim\Form\Field">
+                <field
+                        name="api_enabled"
+                        type="radio"
+                        label="PLG_SYSTEM_PIM_API_ENABLED_LABEL"
+                        description="PLG_SYSTEM_PIM_API_ENABLED_DESC"
+                        default="0"
+                        class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field
+                        name="api_key"
+                        type="apikey"
+                        label="PLG_SYSTEM_PIM_API_REFRESH_KEY_LABEL"
+                        description="PLG_SYSTEM_PIM_API_REFRESH_KEY_DESC"
+                        class="btn-group btn-group-yesno"
+                        showon="api_enabled:1"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+
             <fieldset name="database">
                 <field name="database"
                        type="subform"

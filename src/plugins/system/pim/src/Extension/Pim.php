@@ -12,6 +12,7 @@ namespace Pim\Plugin\System\Pim\Extension;
 
 defined('_JEXEC') or die;
 
+use JLoader;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Database\DatabaseDriver;
@@ -52,6 +53,8 @@ class Pim extends CMSPlugin implements SubscriberInterface
 
     public function __construct(&$subject, $config = [])
     {
+        JLoader::registerNamespace('Pim', JPATH_LIBRARIES . '/Pim');
+
         parent::__construct($subject, $config);
     }
 
