@@ -24,6 +24,37 @@
       "name": "com_pim.list",
       "type": "style",
       "uri": "com_pim/list.css"
+    },
+    {
+      "name": "alpinejs",
+      "type": "script",
+      "uri": "//unpkg.com/alpinejs",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "com_pim.ajax",
+      "type": "script",
+      "uri": "com_pim/ajax.js"
+    },
+    {
+      "name": "com_pim.webserviceAjax",
+      "type": "script",
+      "uri": "com_pim/webservice_ajax.js",
+      "dependencies": [
+        "com_pim.ajax",
+        "alpinejs"
+      ]
+    },
+    {
+      "name": "com_pim.controllerAjax",
+      "type": "script",
+      "uri": "com_pim/controller_ajax.js",
+      "dependencies": [
+        "com_pim.ajax",
+        "alpinejs"
+      ]
     }
   ]
 }
