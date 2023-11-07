@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\ItemModel;
+use Joomla\CMS\MVC\Model\ItemModel as ItemModelCore;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -25,7 +25,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @since  1.0.0
  */
-class ItemModel extends ItemModel
+class ItemModel extends ItemModelCore
 {
     public $_item;
 
@@ -270,7 +270,6 @@ class ItemModel extends ItemModel
     public function delete($id)
     {
         $table = $this->getTable();
-
 
         return $table->delete($id);
     }

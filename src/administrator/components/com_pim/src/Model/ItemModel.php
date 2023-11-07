@@ -58,7 +58,7 @@ class ItemModel extends AdminModel
      *
      * @since   1.0.0
      */
-    public function getTable($type = 'Item', $prefix = 'Administrator', $config = array())
+    public function getTable($type = 'Item', $prefix = 'Administrator', $config = [])
     {
         return parent::getTable($type, $prefix, $config);
     }

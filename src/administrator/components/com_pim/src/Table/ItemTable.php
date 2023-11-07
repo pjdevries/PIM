@@ -85,11 +85,13 @@ class ItemTable extends Table implements VersionableTableInterface, TaggableTabl
         $input = Factory::getApplication()->input;
         $task = $input->getString('task', '');
 
-        if ($array['id'] == 0 && empty($array['created_by'])) {
+        $itemId = (int)($array['id'] ?? 0);
+
+        if (!$itemId && empty($array['created_by'])) {
             $array['created_by'] = Factory::getUser()->id;
         }
 
-        if ($array['id'] == 0 && empty($array['modified_by'])) {
+        if (!$itemId && empty($array['modified_by'])) {
             $array['modified_by'] = Factory::getUser()->id;
         }
 
@@ -109,7 +111,7 @@ class ItemTable extends Table implements VersionableTableInterface, TaggableTabl
             $array['metadata'] = (string)$registry;
         }
 
-        if (!$user->authorise('core.admin', 'com_pim.item.' . $array['id'])) {
+        if (!$user->authorise('core.admin', 'com_pim.item.' . $itemId)) {
             $actions = Access::getActionsFromFile(
                 JPATH_ADMINISTRATOR . '/components/com_pim/access.xml',
                 "/access/section[@name='item']/"

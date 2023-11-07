@@ -19,7 +19,9 @@ use Pim\Api\Exception\ApiDisabledException;
 use Pim\Api\Exception\InsecureRequestException;
 use Pim\Api\Exception\InvalidRequestMethodException;
 use Pim\Api\Exception\UnauthorizedException;
+use Pim\Component\Pim\Administrator\Model\ItemModel;
 use Pim\Component\Pim\Site\Model\ItemsModel;
+use Pim\Database\LastInsertId;
 
 /**
  * Kwekfestijn Component Controller
@@ -106,29 +108,51 @@ class ItemsApiController extends BaseController
 
     }
 
-    public function postItems(): void
+    public function postItem(): void
     {
         try {
             $this->checkRequest('postItems', 'POST');
 
-            $filters = [];
+            $input = file_get_contents('php://input');
 
-            if ($orderId = $this->app->input->getInt('orderId', 0)) {
-                $filters['orderId'] = $orderId;
+            if (empty($input) || !($itemData = json_decode($input, true)) || !isset($itemData['title'])) {
+                $this->sendResponse([], Text::sprintf('COM_PIM_API_EXCEPTION_MISSING_ITEM_DATA'), 400);
             }
 
-            if ($createdDate = $this->app->input->getString('fromCreatedDate', '')) {
-                $filters['fromCreatedDate'] = $createdDate;
-            }
+            /** @var ItemModel $model */
+            $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Item', 'Administrator');
+            $result = $model->save($itemData);
+            $table = $model->getTable();
+            $itemId = LastInsertId::get($table->getTableName());
 
-            /** @var ItemsModel $model */
-            $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Item', 'Site');
-
-            $this->sendResponse(iterator_to_array($model->getOrders($filters)));
+            $this->sendResponse(json_decode(json_encode($model->getItem($itemId)), true));
         } catch (\Exception $e) {
             $this->sendResponse([], $e->getMessage(), $e->getCode());
         }
+    }
 
+    public function deleteItem(): void
+    {
+        try {
+            $this->checkRequest('deleteItem', 'DELETE');
+
+            if (!($itemId = $this->app->getInput()->getInt('id', 0))) {
+                $this->sendResponse([], Text::sprintf('COM_PIM_API_EXCEPTION_MISSING_PARAMETERS', 'id', 400));
+            }
+
+            /** @var ItemModel $model */
+            $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Item', 'Administrator');
+
+            // Occurs when an associated asset could not be deleted.
+            // Will throw an exception in future Joomal! versions.
+            if (!($result = $model->delete($itemId))) {
+                $this->sendResponse([], '', 424);
+            }
+
+            $this->sendResponse();
+        } catch (\Exception $e) {
+            $this->sendResponse([], $e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -185,7 +209,7 @@ class ItemsApiController extends BaseController
      * @param int $status
      * @return void
      */
-    protected function sendResponse(array $data, string $message = null, int $status = 200)
+    protected function sendResponse(array $data = [], string $message = null, int $status = 200)
     {
         $this->app->setHeader('status', $status);
         $this->app->setHeader('Access-Control-Allow-Origin', '*');

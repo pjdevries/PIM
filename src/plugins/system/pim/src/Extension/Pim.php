@@ -15,9 +15,11 @@ defined('_JEXEC') or die;
 use JLoader;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
+use Pim\Database\LastInsertId;
 
 /**
  * Pim plugin.
@@ -62,11 +64,12 @@ class Pim extends CMSPlugin implements SubscriberInterface
     {
         // TODO: Implement getSubscribedEvents() method.
         return [
-            'onAfterRoute' => 'handleAfterRoute'
+            'onAfterRoute' => 'handleAfterRoute',
+            'onTableAfterStore' => 'handleTableAfterStore'
         ];
     }
 
-    public function handleAfterRoute(Event $event)
+    public function handleAfterRoute(Event $event): void
     {
         $lang = $this->app->getLanguage();
         $langTag = $lang->getTag();
@@ -78,4 +81,12 @@ class Pim extends CMSPlugin implements SubscriberInterface
         }
     }
 
+    public function handleTableAfterStore(Event $event): void
+    {
+        /** @var $table Table */
+        /** @var $result bool */
+        [$table, &$result] = array_values($event->getArguments());
+
+        LastInsertId::set($table->getTableName(), $table->getId());
+    }
 }

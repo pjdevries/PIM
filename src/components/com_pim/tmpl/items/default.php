@@ -52,7 +52,7 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
 
     <div class="table-responsive" x-data="itemservice" x-show="items.length">
         <?php
-        if ($canCreate) : ?>
+        if ($canCreate && $canEdit) : ?>
             <input type="text" class="form-control" placeholder="Item title" x-model="newItem">
 
             <a href="#" class="btn btn-success btn-small mt-2" @click="addItem()">
@@ -79,8 +79,17 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                     <?php
                     echo Text::_('COM_PIM_ITEMS_TITLE'); ?>
                 </th>
+
+                <?php
+                if ($canDelete) : ?>
+                    <th>
+                        &nbsp;
+                    </th>
+                <?php
+                endif; ?>
             </tr>
             </thead>
+
             <tfoot>
             <tr>
                 <td colspan="<?php
@@ -103,16 +112,26 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                         </a>
                     </td>
                     <td x-text="item.title"></td>
+                    <?php
+                    if ($canDelete) : ?>
+                        <td>
+                            <a class="btn btn-micro" href="#" @click="delItem(item.id)">
+                                <i class="icon-trash"></i>
+                            </a>
+                        </td>
+                    <?php
+                    endif; ?>
             </template>
             </tbody>
         </table>
     </div>
-    <?php echo HTMLHelper::_('form.token'); ?>
+    <?php
+    echo HTMLHelper::_('form.token'); ?>
 </form>
 
 <script>
     (function () {
-        class WebserviceApi {
+        class Api {
             async getItems(url, headers = {}) {
                 const defaultHeaders = {
                     'Accept': 'application/vnd.api+json'
@@ -137,6 +156,22 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                 });
             }
 
+            async deleteItem(url, headers = {}, data = null) {
+                const defaultHeaders = {
+                    'Content-Type': 'application/vnd.api+jsonn',
+                    'Accept': 'application/vnd.api+json'
+                };
+
+                url += '&' + Object.entries(data)
+                    .map((element) => element[0] + '=' + encodeURIComponent(element[1]))
+                    .join('&');
+
+                return this.ajax(url, {
+                    method: 'DELETE',
+                    headers: Object.assign(defaultHeaders, headers)
+                });
+            }
+
             async ajax(url, options) {
                 if (!url) {
                     return {};
@@ -147,7 +182,13 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                     const decodedResponse = await response.json();
 
                     if (!response.ok) {
-                        Joomla.renderMessages({'error': [response.status + ' - ' + decodedResponse.errors[0].title]});
+                        Joomla.renderMessages({
+                            'error': [
+                                decodedResponse.hasOwnProperty('message')
+                                    ? decodedResponse.message
+                                    : response.status + ' - ' + decodedResponse.errors[0].title
+                            ]
+                        });
 
                         return null;
                     }
@@ -161,52 +202,33 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
             }
         }
 
-        class ControllerApi {
-            async getItems(url, headers = {}) {
-                const defaultHeaders = {
-                    'Accept': 'application/vnd.api+json'
-                };
-
-                return this.ajax(url, {
-                    method: 'GET',
-                    headers: Object.assign(defaultHeaders, headers)
+        class ControllerResponseHandlers {
+            loadItems(collection, items) {
+                items.forEach(item => {
+                    collection.push({
+                        id: item.id,
+                        title: item.title,
+                        state: item.state,
+                    });
                 });
             }
 
-            async postItem(url, headers = {}, data = null) {
-                const defaultHeaders = {
-                    'Content-Type': 'application/vnd.api+jsonn',
-                    'Accept': 'application/vnd.api+json'
-                };
-
-                return this.ajax(url, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: Object.assign(defaultHeaders, headers)
+            addItem(collection, item) {
+                collection.push({
+                    id: item.id,
+                    title: item.title,
+                    state: item.state,
                 });
             }
 
-            async ajax(url, options) {
-                if (!url) {
-                    return {};
+            delItem(collection, itemId) {
+                const index = collection.findIndex(item => item.id === itemId);
+
+                if (index === -1) {
+                    return;
                 }
 
-                try {
-                    const response = await fetch(url, options);
-                    const decodedResponse = await response.json();
-
-                    if (!response.ok) {
-                        Joomla.renderMessages({'error': [decodedResponse.message]});
-
-                        return null;
-                    }
-
-                    return decodedResponse;
-                } catch (e) {
-                    console.log(e.message);
-
-                    return null;
-                }
+                collection.splice(index, 1);
             }
         }
 
@@ -215,7 +237,7 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
             token: 'c2hhMjU2OjM0OmZiODNkNmJmZGFjMTc3NTJkMmQyZGJmZDRiZDczYzQ4ZTgxNzk0NzBmNTJkOGVmZWFhNTdiZTU4ZDMyMWViYmQ=',
             items: [],
             newItem: '',
-            api: new WebserviceApi(),
+            api: new Api(),
             init() {
                 <?php if ($xDebug) : ?>
                 this.endpoint += '?XDEBUG_SESSION_START=' + '<?= $xDebug ?>';
@@ -263,7 +285,8 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
             token: '<?= base64_encode($apiState->enabled ? $apiState->key : '') ?>',
             items: [],
             newItem: '',
-            api: new ControllerApi(),
+            api: new Api(),
+            handlers: new ControllerResponseHandlers(),
             init() {
                 <?php if ($xDebug) : ?>
                 this.endpoint += '&XDEBUG_SESSION_START=' + '<?= $xDebug ?>';
@@ -276,15 +299,7 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                 this.items = [];
 
                 this.api.getItems(this.endpoint + 'getItems', {'Api-Authorization': this.token})
-                    .then(response => {
-                        response.data.forEach(item => {
-                            this.items.push({
-                                id: item.id,
-                                title: item.title,
-                                state: item.state,
-                            });
-                        })
-                    });
+                    .then(response => this.handlers.loadItems(this.items, response.data));
 
             },
             addItem() {
@@ -295,20 +310,24 @@ echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"
                 this.api.postItem(this.endpoint + 'postItem', {'Api-Authorization': this.token}, {
                     title: this.newItem
                 })
-                    .then(response => {
-                        this.items.push({
-                            id: response.data.attributes.id,
-                            title: response.data.attributes.title,
-                            state: response.data.attributes.state,
-                        })
-                    });
+                    .then(response => this.handlers.addItem(this.items, response.data));
 
                 this.newItem = '';
+            },
+            delItem(itemId) {
+                if (this.items.length < 1) {
+                    return;
+                }
+
+                this.api.deleteItem(this.endpoint + 'deleteItem', {'Api-Authorization': this.token}, {
+                    id: itemId
+                })
+                    .then(response => this.handlers.delItem(this.items, itemId));
             }
         };
 
         document.addEventListener('alpine:init', () => {
-            Alpine.data('itemservice', () => WebserviceService);
+            Alpine.data('itemservice', () => ControllerService);
         })
     })();
 </script>
