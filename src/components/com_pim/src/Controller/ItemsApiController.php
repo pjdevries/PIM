@@ -122,8 +122,7 @@ class ItemsApiController extends BaseController
             /** @var ItemModel $model */
             $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Item', 'Administrator');
             $result = $model->save($itemData);
-            $table = $model->getTable();
-            $itemId = LastInsertId::get($table->getTableName());
+            $itemId = $model->getState()->get('item.id');
 
             $this->sendResponse(json_decode(json_encode($model->getItem($itemId)), true));
         } catch (\Exception $e) {
