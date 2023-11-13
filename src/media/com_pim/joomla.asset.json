@@ -55,6 +55,24 @@
         "com_pim.ajax",
         "alpinejs"
       ]
+    },
+    {
+      "name": "com_pim.progressDemoCss",
+      "type": "style",
+      "uri": "com_pim/progressdemo.css"
+    },
+    {
+      "name": "com_pim.progressDemoJs",
+      "type": "script",
+      "uri": "com_pim/progressdemo.js"
+    },
+    {
+      "name": "com_pim.progressDemo",
+      "type": "preset",
+      "dependencies": [
+        "com_pim.progressDemoCss#style",
+        "com_pim.progressDemoJs#script"
+      ]
     }
   ]
 }

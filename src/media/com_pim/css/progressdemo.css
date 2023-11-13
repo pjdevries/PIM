@@ -1,0 +1,19 @@
+.container {
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.progress-bar-wrapper {
+    margin-top: 20px;
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    border: 1px solid darkgray;
+}
+
+#progress-bar {
+    background-color: #007bff; /* Bootstrap primary color */
+    color: #fff;
+    width: 100%;
+    height: 100%;
+}
