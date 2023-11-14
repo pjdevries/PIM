@@ -20,7 +20,7 @@ use Pim\Api\Exception\InsecureRequestException;
 use Pim\Api\Exception\InvalidRequestMethodException;
 use Pim\Api\Exception\UnauthorizedException;
 use Pim\Component\Pim\Administrator\Model\ItemModel;
-use Pim\Component\Pim\Site\Model\ItemsModel;
+use Pim\Component\Pim\Site\Model\AjaxitemsModel;
 use Pim\Database\LastInsertId;
 
 /**
@@ -98,7 +98,7 @@ class ItemsApiController extends BaseController
         try {
             $this->checkRequest('getItems', 'GET');
 
-            /** @var ItemsModel $model */
+            /** @var AjaxitemsModel $model */
             $model = $this->app->bootComponent('com_pim')->getMVCFactory()->createModel('Items', 'Site');
 
             $this->sendResponse($model->getItems());
