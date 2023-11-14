@@ -1,25 +1,30 @@
 (function () {
     const chunkSize = 5;
-    let rowsDone = 0;
 
-// Update progress bar on message received
-    function updateProgressBar(progress) {
-        const progressBar = document.getElementById('progress-bar');
-        progressBar.style.width = progress + '%';
-        progressBar.setAttribute('aria-valuenow', progress);
+    class ProgressBar {
+        elProgressBar;
+        rowsDone = 0;
+
+        constructor() {
+            this.elProgressBar = document.getElementById('progress-bar');
+        }
+
+        update(progress) {
+            this.elProgressBar.style.width = progress + '%';
+            this.elProgressBar.setAttribute('aria-valuenow', progress);
+        }
     }
 
     // Long Polling function
-    function pollForProgress() {
+    function pollForProgress(progressBar, rowsDone = 0) {
         fetch(`index.php?option=com_pim&task=progressdemo.insertRows&format=raw&rowsDone=${rowsDone}&chunkSize=${chunkSize}`)
             .then(response => response.json())
             .then(data => {
-                updateProgressBar(data.progress);
-                rowsDone = data.rowsDone;
+                progressBar.update(data.progress);
 
                 // Poll again if not completed
-                if (rowsDone < data.totalRows) {
-                    setTimeout(pollForProgress, 100);
+                if (data.progress < 100) {
+                    setTimeout(() => pollForProgress(progressBar, data.rowsDone), 100);
                 }
             })
             .catch(error => {
@@ -30,7 +35,14 @@
 
     // Start polling when the page loads
     document.addEventListener('DOMContentLoaded', () => {
-        debugger;
-        pollForProgress();
+        const button = document.getElementById('show-progress');
+
+        if (button) {
+            button.addEventListener('click', e => {
+                pollForProgress(new ProgressBar())
+            });
+        } else {
+            pollForProgress(new ProgressBar());
+        }
     });
 })();

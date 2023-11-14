@@ -12,8 +12,6 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\WebAsset\WebAssetManager;
 
 HTMLHelper::_('bootstrap.framework');
 
@@ -26,4 +24,5 @@ $wa->usePreset('com_pim.progressDemo');
     <div class="progress-bar-wrapper">
         <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
+    <button id="show-progress" type="button" class="btn btn-primary mt-2">Show progress</button>
 </div>
