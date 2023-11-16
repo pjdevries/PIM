@@ -55,9 +55,10 @@ class Pim extends CMSPlugin implements SubscriberInterface
 
     public function __construct(&$subject, $config = [])
     {
-        JLoader::registerNamespace('Pim', JPATH_LIBRARIES . '/Pim');
-
         parent::__construct($subject, $config);
+
+        JLoader::registerNamespace('Pim', JPATH_LIBRARIES . '/Pim');
+        JLoader::registerNamespace('Obix', JPATH_LIBRARIES . '/Obix');
     }
 
     public static function getSubscribedEvents(): array
@@ -79,6 +80,10 @@ class Pim extends CMSPlugin implements SubscriberInterface
             $basePath = JPATH_ADMINISTRATOR;
             $lang->load('com_config', $basePath, $langTag, true);
         }
+
+        $basePath = JPATH_LIBRARIES . '/DeSchrijn';
+        $lang->load('lib_deschrijn', $basePath, $langTag, true);
+
     }
 
     public function handleTableAfterStore(Event $event): void

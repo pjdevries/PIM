@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS `#__pim_items`
     `id`               int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `title`            varchar(255)     NOT NULL,
     `alias`            varchar(400)     NOT NULL,
+    `files`            TEXT,
     `asset_id`         INT(10) UNSIGNED NOT NULL DEFAULT '0',
     `state`            TINYINT(1)       NULL     DEFAULT 1,
     `ordering`         INT(11)          NULL     DEFAULT 0,

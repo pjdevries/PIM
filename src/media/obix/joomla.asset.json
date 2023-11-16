@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "obix",
+  "license": "GNU General Public License version 2 or later; see LICENSE.txt",
+  "assets": [
+    {
+      "name": "obix.uploadCss",
+      "type": "style",
+      "uri": "obix/upload.css"
+    },
+    {
+      "name": "obix.uploadJs",
+      "type": "script",
+      "uri": "obix/upload.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "obix.upload",
+      "type": "preset",
+      "dependencies": [
+        "obix.uploadCss#style",
+        "obix.uploadJs#script"
+      ]
+    }
+  ]
+}

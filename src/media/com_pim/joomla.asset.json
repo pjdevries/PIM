@@ -73,6 +73,27 @@
         "com_pim.progressDemoCss#style",
         "com_pim.progressDemoJs#script"
       ]
+    },
+    {
+      "name": "com_pim.uploadCss",
+      "type": "style",
+      "uri": "com_pim/upload.css"
+    },
+    {
+      "name": "com_pim.uploadJs",
+      "type": "script",
+      "uri": "com_pim/upload.js",
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+      "name": "com_pim.upload",
+      "type": "preset",
+      "dependencies": [
+        "com_pim.uploadCss#style",
+        "com_pim.uploadJs#script"
+      ]
     }
   ]
 }

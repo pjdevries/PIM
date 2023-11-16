@@ -79,7 +79,6 @@ $canEdit = PimHelper::canUserEdit($this->item, $user);
             echo HTMLHelper::_('uitab.endTab'); ?>
             <div class="control-group">
                 <div class="controls">
-
                     <?php
                     if ($this->canSave): ?>
                         <button type="submit" class="validate btn btn-primary">

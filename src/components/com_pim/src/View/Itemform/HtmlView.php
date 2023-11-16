@@ -59,8 +59,7 @@ class HtmlView extends BaseHtmlView
             throw new \Exception(implode("\n", $errors));
         }
 
-
-        $this->_prepareDocument();
+        $this->prepareDocument();
 
         parent::display($tpl);
     }
@@ -70,9 +69,9 @@ class HtmlView extends BaseHtmlView
      *
      * @return void
      *
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function _prepareDocument()
+    protected function prepareDocument()
     {
         $app = Factory::getApplication();
         $menus = $app->getMenu();

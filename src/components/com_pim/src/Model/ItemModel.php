@@ -37,7 +37,7 @@ class ItemModel extends ItemModelCore
      *
      * @return  void
      *
-     * @throws Exception
+     * @throws \Exception
      * @since   1.0.0
      *
      */
@@ -80,7 +80,7 @@ class ItemModel extends ItemModelCore
      *
      * @return  mixed    Object on success, false on failure.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function getItem($id = null)
     {

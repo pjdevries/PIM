@@ -13,11 +13,16 @@ namespace Pim\Component\Pim\Site\Model;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
 use Joomla\CMS\Object\CMSObject;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\Utilities\ArrayHelper;
+use Obix\Filesystem\Upload\Handler;
+use Obix\Filesystem\Upload\Prerequisites;
+use Obix\Form\Field\UploadField;
 
 /**
  * Pim model.
@@ -36,7 +41,7 @@ class ItemformModel extends FormModel
      *
      * @return  void
      *
-     * @throws  Exception
+     * @throws  \Exception
      * @since   1.0.0
      *
      */
@@ -72,7 +77,7 @@ class ItemformModel extends FormModel
      *
      * @return  Object|boolean Object on success, false on failure.
      *
-     * @throws  Exception
+     * @throws  \Exception
      */
     public function getItem($id = null)
     {
@@ -232,7 +237,7 @@ class ItemformModel extends FormModel
      * @param array $data An optional array of data for the form to interogate.
      * @param boolean $loadData True if the form is to load its own data (default case), false if not.
      *
-     * @return  Form    A Form object on success, false on failure
+     * @return  Form|false    A Form object on success, false on failure
      *
      * @since   1.0.0
      */
@@ -280,15 +285,18 @@ class ItemformModel extends FormModel
      *
      * @return  bool
      *
-     * @throws  Exception
+     * @throws  \Exception
      * @since   1.0.0
      */
     public function save($data)
     {
+        $app = Factory::getApplication();
+        $context = $this->option . '.' . $this->name;
+
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('item.id');
         $state = (!empty($data['state'])) ? 1 : 0;
         $user = Factory::getApplication()->getIdentity();
-
+        $isNew = true;
 
         if ($id) {
             // Check the user can edit this item
@@ -296,6 +304,7 @@ class ItemformModel extends FormModel
                     'core.edit.own',
                     'com_pim.item.' . $id
                 );
+            $isNew = false;
         } else {
             // Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_pim');
@@ -311,16 +320,67 @@ class ItemformModel extends FormModel
             $table->load($id);
         }
 
-
         try {
-            if ($table->save($data) === true) {
-                return $table->id;
-            } else {
-                Factory::getApplication()->enqueueMessage($table->getError(), 'error');
-                return false;
+            // Include the plugins for the save events.
+            PluginHelper::importPlugin('content');
+
+            // Wrap database and/or file system manipulations in a database transaction.
+            $db = $table->getDbo();
+            $db->transactionStart();
+
+            $data['files'] = json_encode([]);
+
+            // Get uploaded files from request.
+            $uploadedFiles = $app->getInput()->files->get('jform', [], 'RAW');
+
+            if (count($uploadedFiles)) {
+                $validFiles = Handler::handle($uploadedFiles, $this->getForm([], false));
+
+                $filesData = json_decode($table->files ?: '[]', true);
+                $maxFileId = array_reduce($filesData, fn(int $id, array $fileData) => max($id, $fileData['id']), 0);
+
+                $filesData = [
+                    ...$filesData,
+                    ...array_map(function (array $file) use (&$maxFileId) {
+                        return [
+                            'id' => ++$maxFileId,
+                            'name' => $file['name'],
+                            'full_path' => $file['full_path'] ?? '',
+                            'dest_path' => $file['dest_path']
+                        ];
+                    }, $validFiles)
+                ];
+
+                $data['files'] = json_encode($filesData);
             }
+
+            $result = $app->triggerEvent('onContentBeforeSave', [$context, $table, $isNew, $data]);
+
+            if (\in_array(false, $result, true)) {
+                throw new \RuntimeException($table->getError());
+            }
+
+            if ($table->save($data) !== true) {
+                throw new \RuntimeException($table->getError());
+            }
+
+            $app->triggerEvent('onContentAfterSave', [$context, $table, $isNew, $data]);
+
+            // If there were no critical database and/or file system manipulation errors, commit the transaction.
+            $db->transactionCommit();
+
+            return $table->id;
         } catch (\Exception $e) {
+            // On exception, rollback the transaction.
+            $db->transactionRollback();
+
+            /** @var Handler $handler */
+            foreach ($handlers as $handler) {
+                $handler->remove();
+            }
+
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
             return false;
         }
     }
@@ -328,18 +388,19 @@ class ItemformModel extends FormModel
     /**
      * Method to delete data
      *
-     * @param int $pk Item primary key
+     * @param array $id Item primary key
      *
      * @return  int  The id of the deleted item
      *
-     * @throws  Exception
+     * @throws  \Exception
      *
      * @since   1.0.0
      */
-    public function delete($id)
+    public function delete(&$pks)
     {
         $user = Factory::getApplication()->getIdentity();
 
+        $id = is_array($pks) ? $pks[0] : $pks;
 
         if (empty($id)) {
             $id = (int)$this->getState('item.id');
