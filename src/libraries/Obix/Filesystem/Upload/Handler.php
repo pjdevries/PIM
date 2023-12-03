@@ -13,10 +13,15 @@ namespace Obix\Filesystem\Upload;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 
 class Handler
 {
+    const ALL = 0;
+    const SUCCESFUL = 1;
+    const FAILED = 2;
+
     private array $uploadedFiles;
 
     private Prerequisites $prerequisites;
@@ -30,13 +35,38 @@ class Handler
         $this->prerequisites = $prerequisites;
     }
 
-    public static function handle(array $uploadedFiles, Form $form): array
+    public function execute(): array
     {
-        $validFiles = [];
+        foreach ($this->uploadedFiles as $files) {
+            $failureCount = $this->check();
+
+            if ($failureCount < count($files)) {
+                $this->save();
+            }
+        }
+
+        return $this->getSuccesful();
+    }
+
+    public static function handle(array $uploadedFiles, Form $form, bool $onlyReturnSuccessful = false): array
+    {
+        $handled = [];
+
+        // Extract custom field settings for all fields of type "obixupload" from the form definition.
+        $uploadFieldSpecsByFieldName = array_reduce($form->getFieldset(), function (array $carry, FormField $field) {
+            if (strtolower($field->getAttribute('type')) === 'obixupload') {
+                $carry[$field->getProperty('fieldname')] = [
+                    'maxUploadSize' => $field->getAttribute('maxUploadSize') ?? $field->getProperty('maxUploadSize'),
+                    'destDir' => $field->getAttribute('destDir') ?? $field->getProperty('destDir')
+                ];
+            }
+
+            return $carry;
+        }, []);
 
         foreach ($uploadedFiles as $fieldName => $files) {
-            $fieldXml = $form->getFieldXml($fieldName);
-            $prerequisites = new Prerequisites((string)$fieldXml['destdir'], (string)$fieldXml['maxuploadsize']);
+            $fieldSpecs = $uploadFieldSpecsByFieldName[$fieldName];
+            $prerequisites = new Prerequisites($fieldSpecs['destDir'], $fieldSpecs['maxUploadSize']);
 
             $uploadHandler = new static($files, $prerequisites);
             $failureCount = $uploadHandler->check();
@@ -45,21 +75,22 @@ class Handler
                 $uploadHandler->save();
             }
 
-            $validFiles = [...$validFiles, ...$uploadHandler->validFiles()];
+            $handled[self::SUCCESFUL][$fieldName] = $uploadHandler->getSuccesful();
+            $handled[self::FAILED][$fieldName] = $uploadHandler->getFailed();
         }
 
-        return $validFiles;
+        return $onlyReturnSuccessful ? $handled[self::SUCCESFUL] : $handled;
     }
 
     public function check(): int
     {
         $failureCount = 0;
 
-        foreach ($this->uploadedFiles as &$uploadedFile) {
+        foreach ($this->uploadedFiles as $key => $uploadedFile) {
             try {
                 $this->checkFile($uploadedFile);
             } catch (\RuntimeException $e) {
-                $uploadedFile['exception'] = $e;
+                $this->uploadedFiles[$key]['exception'] = $e;
                 $failureCount++;
             }
         }
@@ -123,24 +154,35 @@ class Handler
         });
     }
 
-    public function validFiles(): array
+    public function getFailed(): array
     {
-        // Files that survived the validation don't contain an exception element.
-        return array_filter($this->uploadedFiles, function (array $file) {
-            return !isset($file['exception']);
-        });
+        return $this->getProcessed(self::FAILED);
+    }
+
+    public function getSuccesful(): array
+    {
+        return $this->getProcessed(self::SUCCESFUL);
+    }
+
+    public function getProcessed(int $which = self::ALL): array
+    {
+        return match ($which) {
+            self::SUCCESFUL => array_filter($this->uploadedFiles, fn($u) => !isset($file['exception'])),
+            self::FAILED => array_filter($this->uploadedFiles, fn($u) => isset($file['exception'])),
+            default => $this->uploadedFiles
+        };
     }
 
     public function save(): int
     {
         $failureCount = 0;
 
-        foreach ($this->validFiles() as &$file) {
+        foreach ($this->getSuccesful() as $key => $file) {
             try {
                 // Move the uploaded file to the final destination.
-                $file['dest_path'] = $this->move($file);
+                $this->uploadedFiles[$key]['dest_path'] = $this->move($file);
             } catch (\Exception $e) {
-                $file['exception'] = $e;
+                $this->uploadedFiles[$key]['exception'] = $e;
                 $failureCount++;
             }
         }
@@ -152,8 +194,7 @@ class Handler
     {
         $srcPath = $uploadedFile['tmp_name'];
 
-        if (!is_uploaded_file($srcPath))
-        {
+        if (!is_uploaded_file($srcPath)) {
             throw new \RuntimeException(Text::_('COM_DMA_ERROR_NOT_AN_UPLOADED_FILE'));
         }
 
@@ -188,13 +229,11 @@ class Handler
             } while (file_exists($destPath));
         }
 
-        if (!rename($srcPath, $destPath))
-        {
+        if (!rename($srcPath, $destPath)) {
             throw new \RuntimeException(error_get_last()['message']);
         }
 
-        if (!chmod($destPath, 0644))
-        {
+        if (!chmod($destPath, 0644)) {
             unlink($destPath);
 
             throw new \RuntimeException(error_get_last()['message']);
@@ -205,7 +244,7 @@ class Handler
 
     public function remove(): void
     {
-        foreach ($this->validFiles() as $file) {
+        foreach ($this->getSuccesful() as $file) {
             if (file_exists($file['dest_path'])) {
                 unlink($file['dest_path']);
             }

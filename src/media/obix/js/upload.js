@@ -88,7 +88,7 @@
                 return;
             }
 
-            elLabel.innerHTML = (files.length > 1 ? (this.elFileInput.getAttribute('data-multiple-caption') || '').replace( '{count}', files.length ) : files[ 0 ].name);
+            elLabel.innerHTML = (files.length > 1 ? (this.elFileInput.getAttribute('data-multiple-caption') || '').replace('{count}', files.length) : files[0].name);
         }
     }
 
@@ -100,7 +100,7 @@
 
     const uploadBoxes = [];
 
-     const initUploadBoxes = () => {
+    const initUploadBoxes = () => {
         const elUploadBoxes = document.querySelectorAll('.upload-box');
 
         elUploadBoxes.forEach(elUploadBox => {
@@ -129,8 +129,33 @@
         });
     };
 
+    const setEnctype = () => {
+        const fields = Joomla.getOptions('obixUploadField')['fields'];
+
+        Object.entries(fields).forEach(([id, name]) => {
+            const elInput = document.getElementById(id);
+
+            if (!elInput) {
+                return;
+            }
+
+            const elForm = elInput.closest('form');
+
+            if (!elForm) {
+                return;
+            }
+
+            const enctype = elForm.getAttribute('enctype');
+
+            if (!enctype || enctype !== 'multipart/form-data') {
+                elForm.setAttribute('enctype', 'multipart/form-data');
+            }
+        });
+    };
+
     document.addEventListener('DOMContentLoaded', e => {
         // debugger;
         initUploadBoxes();
+        setEnctype();
     });
 })();

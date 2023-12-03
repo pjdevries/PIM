@@ -42,6 +42,8 @@ HTMLHelper::_('bootstrap.tooltip');
                 <?php
                 echo $this->form->renderField('alias'); ?>
                 <?php
+                echo $this->form->renderField('files'); ?>
+                <?php
                 if ($this->state->params->get('save_history', 1)) : ?>
                     <div class="control-group">
                         <div class="control-label"><?php

@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
 use Joomla\CMS\Object\CMSObject;
@@ -22,7 +23,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\Utilities\ArrayHelper;
 use Obix\Filesystem\Upload\Handler;
 use Obix\Filesystem\Upload\Prerequisites;
-use Obix\Form\Field\UploadField;
+use Obix\Form\Field\ObixuploadField;
 
 /**
  * Pim model.
@@ -331,27 +332,36 @@ class ItemformModel extends FormModel
             $data['files'] = json_encode([]);
 
             // Get uploaded files from request.
-            $uploadedFiles = $app->getInput()->files->get('jform', [], 'RAW');
+            $allFiles = $app->getInput()->files->get('jform', [], 'RAW');
 
-            if (count($uploadedFiles)) {
-                $validFiles = Handler::handle($uploadedFiles, $this->getForm([], false));
+            if (count($allFiles)) {
+                foreach (Handler::handle($allFiles, $this->getForm([], false))[Handler::SUCCESFUL] as $fieldName => $handledFiles) {
+                    if (!count($handledFiles)) {
+                        continue;
+                    }
 
-                $filesData = json_decode($table->files ?: '[]', true);
-                $maxFileId = array_reduce($filesData, fn(int $id, array $fileData) => max($id, $fileData['id']), 0);
-
-                $filesData = [
-                    ...$filesData,
-                    ...array_map(function (array $file) use (&$maxFileId) {
+                    $oldFilesData = json_decode($table->files ?: '{}', true);
+                    $maxFileId = array_reduce(
+                        $oldFilesData,
+                        fn(int $id, array $fileData) => max($id, $fileData['id']),
+                        0
+                    );
+                    $addionalFilesData = array_map(function (array $file) use (&$maxFileId) {
                         return [
                             'id' => ++$maxFileId,
                             'name' => $file['name'],
                             'full_path' => $file['full_path'] ?? '',
                             'dest_path' => $file['dest_path']
                         ];
-                    }, $validFiles)
-                ];
+                    }, $handledFiles);
 
-                $data['files'] = json_encode($filesData);
+                    $newFilesData = [
+                        ...$oldFilesData,
+                        ...$addionalFilesData
+                    ];
+
+                    $data[$fieldName] = json_encode($newFilesData);
+                }
             }
 
             $result = $app->triggerEvent('onContentBeforeSave', [$context, $table, $isNew, $data]);
@@ -383,6 +393,22 @@ class ItemformModel extends FormModel
 
             return false;
         }
+    }
+
+    public function getUploadPrerequisites(array $fieldNames): array
+    {
+        $form = $this->getForm([], false);
+        $prerequisites = [];
+
+        foreach ($fieldNames as $fieldName) {
+            $fieldXml = $form->getFieldXml($fieldName);
+            $dummy = new Prerequisites((string)$fieldXml['destdir'], (string)$fieldXml['maxuploadsize']);
+
+            $field = $form->getField($fieldName);
+            $prerequisites[$fieldName] = new Prerequisites($field->getAttribute('destdir'), $field->getAttribute('maxuploadsize'));
+        }
+
+        return $prerequisites;
     }
 
     /**

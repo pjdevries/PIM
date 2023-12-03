@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="fields" method="upgrade">
+    <name>PLG_FIELDS_OBIXUPLOAD</name>
+    <author>Obix webtechniek</author>
+    <creationDate>2023-11-20</creationDate>
+    <copyright>(C) 2023 Obix webtechniek</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>pieter@obix.nl</authorEmail>
+    <authorUrl>www.obix.nl</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_FIELDS_OBIXUPLOAD_XML_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Fields\ObixUpload</namespace>
+
+    <!-- Scripts to run on installation -->
+    <scriptfile>script.php</scriptfile>
+
+    <!-- Media files
+    <media folder="media/plg_fields_obixupload" destination="plg_fields_obixupload">
+        <folder>css</folder>
+        <folder>js</folder>
+    </media>
+    -->
+
+    <!-- Plugin files -->
+    <files>
+        <folder>language</folder>
+        <folder>params</folder>
+        <folder plugin="obixupload">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="maxUploadSize"
+                        type="text"
+                        label="PLG_FIELDS_OBIXUPLOAD_MAX_UPLOAD_SIZE_LABEL"
+                        description="PLG_FIELDS_OBIXUPLOAD_MAX_UPLOAD_SIZE_DESC"
+                        default="2M"
+                />
+
+                <field
+                        name="destDir"
+                        type="text"
+                        label="PLG_FIELDS_OBIXUPLOAD_DIRECTORY_LABEL"
+                        description="PLG_FIELDS_OBIXUPLOAD_DIRECTORY_DESC"
+                        default="images"
+                />
+
+<!--                <field-->
+<!--                        name="fileFilter"-->
+<!--                        type="text"-->
+<!--                        label="PLG_FIELDS_OBIXUPLOAD_FILE_FILTER_LABEL"-->
+<!--                        description="PLG_FIELDS_OBIXUPLOAD_FILE_FILTER_DESC"-->
+<!--                        default=""-->
+<!--                />-->
+
+<!--                <field-->
+<!--                        name="accept"-->
+<!--                        type="text"-->
+<!--                        label="PLG_FIELDS_OBIXUPLOAD_ACCEPT_LABEL"-->
+<!--                        description="PLG_FIELDS_OBIXUPLOAD_ACCEPT_DESC"-->
+<!--                        default=""-->
+<!--                />-->
+            </fieldset>
+        </fields>
+    </config>
+</extension>

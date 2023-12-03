@@ -23,6 +23,16 @@
                hint="JFIELD_ALIAS_PLACEHOLDER"
         />
 
+        <field
+                name="files"
+                type="obixupload"
+                label="COM_PIM_ITEM_UPLOAD_LABEL"
+                description="COM_PIM_ITEM_UPLOAD_DESC"
+                maxuploadsize="2M"
+                destdir="../uploads"
+                addfieldprefix="Obix\Form\Field"
+        />
+
         <field name="state"
                default="1"
                type="list"
