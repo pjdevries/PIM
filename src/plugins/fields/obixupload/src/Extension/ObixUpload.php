@@ -65,7 +65,7 @@ final class ObixUpload extends FieldsPlugin implements SubscriberInterface
             'onContentPrepareForm' => ['handleContentPrepareForm', Priority::BELOW_NORMAL],
             'onCustomFieldsPrepareField' => ['handleCustomFieldsPrepareField', Priority::NORMAL],
             'onCustomFieldsPrepareDom' => ['handleCustomFieldsPrepareDom', Priority::NORMAL],
-//            'onContentBeforeSave' => ['handleContentBeforeSave', Priority::NORMAL],
+            'onContentBeforeSave' => ['handleContentBeforeSave', Priority::NORMAL],
             'onContentNormaliseRequestData' => ['handleContentNormaliseRequestData', Priority::NORMAL],
         ];
     }
@@ -143,15 +143,15 @@ final class ObixUpload extends FieldsPlugin implements SubscriberInterface
 
         // Process all uploaded files.
         if (count($allFiles['com_fields'])) {
-            foreach (
-                Handler::handle(
-                    $allFiles['com_fields'],
-                    $form
-                )[Handler::SUCCESFUL] as $fieldName => $handledFiles
-            ) {
-                if (!count($handledFiles)) {
+            $handlers = Handler::handle($allFiles['com_fields'], $form);
+
+            foreach ($handlers as $fieldName => $handler) {
+                $uploadedFiles = $handler->getSuccesful();
+
+                if (!count($uploadedFiles)) {
                     continue;
                 }
+
                 $oldFilesData = json_decode(($data->com_fields[$fieldName] ?? null) ?: '{}', true);
                 $maxFileId = array_reduce($oldFilesData, fn(int $id, array $fileData) => max($id, $fileData['id']), 0);
                 $addionalFilesData = array_map(function (array $file) use (&$maxFileId) {
@@ -161,7 +161,7 @@ final class ObixUpload extends FieldsPlugin implements SubscriberInterface
                         'full_path' => $file['full_path'] ?? '',
                         'dest_path' => $file['dest_path']
                     ];
-                }, $handledFiles);
+                }, $uploadedFiles);
 
                 $newFilesData = [
                     ...$oldFilesData,

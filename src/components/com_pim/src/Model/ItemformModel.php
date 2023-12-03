@@ -335,8 +335,12 @@ class ItemformModel extends FormModel
             $allFiles = $app->getInput()->files->get('jform', [], 'RAW');
 
             if (count($allFiles)) {
-                foreach (Handler::handle($allFiles, $this->getForm([], false))[Handler::SUCCESFUL] as $fieldName => $handledFiles) {
-                    if (!count($handledFiles)) {
+                $handlers = Handler::handle($allFiles, $this->getForm([], false));
+
+                foreach ($handlers as $fieldName => $handler) {
+                    $uploadedFiles = $handler->getSuccesful();
+
+                    if (!count($uploadedFiles)) {
                         continue;
                     }
 
@@ -353,7 +357,7 @@ class ItemformModel extends FormModel
                             'full_path' => $file['full_path'] ?? '',
                             'dest_path' => $file['dest_path']
                         ];
-                    }, $handledFiles);
+                    }, $uploadedFiles);
 
                     $newFilesData = [
                         ...$oldFilesData,

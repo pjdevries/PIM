@@ -48,14 +48,21 @@ class Handler
         return $this->getSuccesful();
     }
 
+    /**
+     * @param array $uploadedFiles
+     * @param Form $form
+     * @param bool $onlyReturnSuccessful
+     * @return Handler[]
+     */
     public static function handle(array $uploadedFiles, Form $form, bool $onlyReturnSuccessful = false): array
     {
-        $handled = [];
+        $handlers = [];
 
         // Extract custom field settings for all fields of type "obixupload" from the form definition.
         $uploadFieldSpecsByFieldName = array_reduce($form->getFieldset(), function (array $carry, FormField $field) {
             if (strtolower($field->getAttribute('type')) === 'obixupload') {
-                $carry[$field->getProperty('fieldname')] = [
+                // File input name is field name with '-files' suffix appended.
+                $carry[$field->getProperty('fieldname') . '-files'] = [
                     'maxUploadSize' => $field->getAttribute('maxUploadSize') ?? $field->getProperty('maxUploadSize'),
                     'destDir' => $field->getAttribute('destDir') ?? $field->getProperty('destDir')
                 ];
@@ -69,17 +76,12 @@ class Handler
             $prerequisites = new Prerequisites($fieldSpecs['destDir'], $fieldSpecs['maxUploadSize']);
 
             $uploadHandler = new static($files, $prerequisites);
-            $failureCount = $uploadHandler->check();
+            $uploadHandler->execute();
 
-            if ($failureCount < count($files)) {
-                $uploadHandler->save();
-            }
-
-            $handled[self::SUCCESFUL][$fieldName] = $uploadHandler->getSuccesful();
-            $handled[self::FAILED][$fieldName] = $uploadHandler->getFailed();
+            $handlers[$fieldName] = $uploadHandler;
         }
 
-        return $onlyReturnSuccessful ? $handled[self::SUCCESFUL] : $handled;
+        return $handlers;
     }
 
     public function check(): int

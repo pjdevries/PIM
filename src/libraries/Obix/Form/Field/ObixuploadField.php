@@ -126,14 +126,19 @@ class ObixuploadField extends FormField
     {
         $data = parent::getLayoutData();
 
+        $filesInputId = $data['id'] . '-files';
+        $filesInputName = $this->getName($this->fieldname . '-files');
+
         $doc = Factory::getApplication()->getDocument();
         $doc->addScriptOptions('obixUploadField', [
             'fields' => [
-                $data['id'] => $data['name']
+                $filesInputId => $filesInputName
             ]
         ], true);
 
         $extraData = array(
+            'filesId' => $filesInputId,
+            'filesName' => $filesInputName,
             'value' => $this->value,
         );
 

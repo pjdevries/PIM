@@ -64,7 +64,7 @@
         }
 
         addToDropped(dtMore, uploadBox) {
-            const dt = new DataTransfer()
+            // const dt = new DataTransfer()
 
             Array.from(dtMore.files).forEach(file => uploadBox.dtDropped.items.add(file));
         }
