@@ -14,7 +14,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
-use Joomla\CMS\Form\FormField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
 use Joomla\CMS\Object\CMSObject;
@@ -23,7 +22,6 @@ use Joomla\CMS\Table\Table;
 use Joomla\Utilities\ArrayHelper;
 use Obix\Filesystem\Upload\Handler;
 use Obix\Filesystem\Upload\Prerequisites;
-use Obix\Form\Field\ObixuploadField;
 
 /**
  * Pim model.
@@ -409,7 +407,10 @@ class ItemformModel extends FormModel
             $dummy = new Prerequisites((string)$fieldXml['destdir'], (string)$fieldXml['maxuploadsize']);
 
             $field = $form->getField($fieldName);
-            $prerequisites[$fieldName] = new Prerequisites($field->getAttribute('destdir'), $field->getAttribute('maxuploadsize'));
+            $prerequisites[$fieldName] = new Prerequisites(
+                $field->getAttribute('destdir'),
+                $field->getAttribute('maxuploadsize')
+            );
         }
 
         return $prerequisites;

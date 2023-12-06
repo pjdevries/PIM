@@ -28,8 +28,10 @@ $value = htmlspecialchars($displayData['value']);
     <div class="upload-box__icon"><span class="fa fa-file-upload"></span></div>
     <div class="upload-box__input">
         <input type="hidden" name="<?= $name ?>" id="<?= $id ?>" value="<?= $value ?>"/>
-        <input class="upload-box__file" type="file" name="<?= $filesName ?>" id="<?= $filesId ?>" data-multiple-caption="<?= Text::_('FORM_FIELD_UPLOAD_NUM_FILES_ADDED') ?>" multiple />
-        <label for="<?= $filesId ?>"><strong>Choose a file</strong><span class="upload-box__dragndrop"> or drag it here</span>.</label>
+        <input class="upload-box__file" type="file" name="<?= $filesName ?>" id="<?= $filesId ?>"
+               data-multiple-caption="<?= Text::_('FORM_FIELD_UPLOAD_NUM_FILES_ADDED') ?>" multiple/>
+        <label for="<?= $filesId ?>"><strong>Choose a file</strong><span
+                    class="upload-box__dragndrop"> or drag it here</span>.</label>
         <button class="upload-box__button" type="submit">Upload</button>
     </div>
     <div class="upload-box__uploading">Uploading…</div>

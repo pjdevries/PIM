@@ -32,17 +32,17 @@
                 destdir="../uploads"
         />
 
-<!--        <field-->
-<!--                name="media"-->
-<!--                type="media"-->
-<!--                label="Media"-->
-<!--        />-->
+        <!--        <field-->
+        <!--                name="media"-->
+        <!--                type="media"-->
+        <!--                label="Media"-->
+        <!--        />-->
 
-<!--        <field-->
-<!--                name="accessiblemedia"-->
-<!--                type="accessiblemedia"-->
-<!--                label="Accessible media"-->
-<!--        />-->
+        <!--        <field-->
+        <!--                name="accessiblemedia"-->
+        <!--                type="accessiblemedia"-->
+        <!--                label="Accessible media"-->
+        <!--        />-->
 
         <field name="state"
                default="1"

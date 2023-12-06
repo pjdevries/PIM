@@ -22,7 +22,7 @@ return new class () implements ServiceProviderInterface {
     /**
      * Registers the service provider with a DI container.
      *
-     * @param   Container  $container  The DI container.
+     * @param Container $container The DI container.
      *
      * @return  void
      *
@@ -34,7 +34,7 @@ return new class () implements ServiceProviderInterface {
             PluginInterface::class,
             function (Container $container) {
                 $dispatcher = $container->get(DispatcherInterface::class);
-                $plugin     = new ObixUpload(
+                $plugin = new ObixUpload(
                     $dispatcher,
                     (array)PluginHelper::getPlugin('fields', 'obixupload')
                 );

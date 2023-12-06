@@ -42,9 +42,9 @@ $action = Route::_('index.php?option=com_pim&layout=edit&id=' . (int)$this->item
                 <?php
                 echo $this->form->renderField('files'); ?>
                 <?php
-//                echo $this->form->renderField('media'); ?>
+                //                echo $this->form->renderField('media'); ?>
                 <?php
-//                echo $this->form->renderField('accessiblemedia'); ?>
+                //                echo $this->form->renderField('accessiblemedia'); ?>
                 <?php
                 if ($this->state->params->get('save_history', 1)) : ?>
                     <div class="control-group">

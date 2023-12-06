@@ -16,8 +16,11 @@ use Joomla\CMS\Language\Text;
 
 class InsecureRequestException extends \RuntimeException
 {
-    public function __construct($message = 'COM_PIM_API_EXCEPTION_INSECURE_REQUEST', $code = 400, \Throwable $previous = null)
-    {
+    public function __construct(
+        $message = 'COM_PIM_API_EXCEPTION_INSECURE_REQUEST',
+        $code = 400,
+        \Throwable $previous = null
+    ) {
         parent::__construct(Text::_($message), $code, $previous);
     }
 }

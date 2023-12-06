@@ -17,7 +17,7 @@
                 state: item.attributes.state,
             });
         }
-        
+
         delItem(collection, itemId) {
             const index = collection.findIndex(item => item.id === itemId);
 
@@ -30,7 +30,7 @@
     }
 
     window.PIM = window.PIM || {};
-    window.PIM.AlpineData = function (endpoint, token){
+    window.PIM.AlpineData = function (endpoint, token) {
         return {
             endpoint: endpoint,
             token: token,

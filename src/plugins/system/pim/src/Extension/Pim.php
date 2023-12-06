@@ -83,7 +83,6 @@ class Pim extends CMSPlugin implements SubscriberInterface
 
         $basePath = JPATH_LIBRARIES . '/DeSchrijn';
         $lang->load('lib_deschrijn', $basePath, $langTag, true);
-
     }
 
     public function handleTableAfterStore(Event $event): void

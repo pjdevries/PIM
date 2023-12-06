@@ -7,6 +7,7 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  * @link        https://www.obix.nl
  */
+
 // Path: components/com_pim/views/pim/tmpl/default.php
 
 defined('_JEXEC') or die;
@@ -22,7 +23,8 @@ $wa->usePreset('com_pim.progressDemo');
 <div class="container mt-5">
     <h2>Progress Bar</h2>
     <div class="progress-bar-wrapper">
-        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+             aria-valuemin="0" aria-valuemax="100"></div>
     </div>
     <button id="show-progress" type="button" class="btn btn-primary mt-2">Show progress</button>
 </div>

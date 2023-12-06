@@ -96,7 +96,7 @@ $buttonVisibility = ($readonly || $disabled) ? 'hidden ' : '';
         <?php
         endif; ?>
 
-        <input type="text" id="<?= $id; ?>" name="<?=  $name; ?>" value="<?= $inputValue ?>" <?= $attributes; ?>
+        <input type="text" id="<?= $id; ?>" name="<?= $name; ?>" value="<?= $inputValue ?>" <?= $attributes; ?>
             <?= $inputHint ?> data-alt-value="<?= $inputAlt ?>" autocomplete="off" style="background-color: #eee;"/>
 
         <button type="button" class="<?= $buttonVisibility ?> btn btn-secondary"

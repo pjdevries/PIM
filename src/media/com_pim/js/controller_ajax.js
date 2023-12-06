@@ -28,7 +28,7 @@
             collection.splice(index, 1);
         }
     }
-    
+
     window.PIM = window.PIM || {};
     window.PIM.AlpineData = function (endpoint, token) {
         return {

@@ -21,7 +21,6 @@ use Pim\Api\Exception\InvalidRequestMethodException;
 use Pim\Api\Exception\UnauthorizedException;
 use Pim\Component\Pim\Administrator\Model\ItemModel;
 use Pim\Component\Pim\Site\Model\AjaxitemsModel;
-use Pim\Database\LastInsertId;
 
 /**
  * Kwekfestijn Component Controller
@@ -90,7 +89,9 @@ class ItemsApiController extends BaseController
      */
     public function display($cachable = false, $urlparams = [])
     {
-        $this->sendResponse([], Text::sprintf('COM_PIM_API_EXCEPTION_UNKNOWN_REQUEST_TASK', $this->app->getInput()->getCmd('task')), 404);
+        $this->sendResponse([],
+            Text::sprintf('COM_PIM_API_EXCEPTION_UNKNOWN_REQUEST_TASK', $this->app->getInput()->getCmd('task')),
+            404);
     }
 
     public function getItems(): void
@@ -105,7 +106,6 @@ class ItemsApiController extends BaseController
         } catch (\Exception $e) {
             $this->sendResponse([], $e->getMessage(), $e->getCode());
         }
-
     }
 
     public function postItem(): void
