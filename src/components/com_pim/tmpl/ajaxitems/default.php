@@ -41,7 +41,7 @@ $wa->useStyle('com_pim.list');
 
 $doc->addScriptOptions('ajax-auth', [
     'endpoint' => 'https://j4.obix.local:8482/api/v1/pim/items',
-    'token' => 'c2hhMjU2OjM0OmZiODNkNmJmZGFjMTc3NTJkMmQyZGJmZDRiZDczYzQ4ZTgxNzk0NzBmNTJkOGVmZWFhNTdiZTU4ZDMyMWViYmQ='
+    'token' => 'c2hhMjU2OjM0OmUzMzBhODkzNDVhNzM1N2IwNjdiMWNjOWI4OWJiYTFmOGYyNzE5OTczM2FmZDFjNmFiNjg3NDMxNWNlOTgzMjE='
 ]);
 $wa->useScript('com_pim.webserviceAjax');
 
