@@ -13,7 +13,7 @@
 
         async postItem(url, headers = {}, data = null) {
             const defaultHeaders = {
-                'Content-Type': 'application/vnd.api+jsonn',
+                'Content-Type': 'application/vnd.api+json',
                 'Accept': 'application/vnd.api+json'
             };
 
@@ -26,7 +26,7 @@
 
         async deleteItem(url, headers = {}, data = null) {
             const defaultHeaders = {
-                'Content-Type': 'application/vnd.api+jsonn',
+                'Content-Type': 'application/vnd.api+json',
                 'Accept': 'application/vnd.api+json'
             };
 
